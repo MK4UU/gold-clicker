@@ -3,94 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gold Clicker Nova | Pro Version</title>
+    <title>Gold Clicker Nova | Characters Edition</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #050a12; --blue: #4db5ff; --gold: #ff9d00; --glass: rgba(255,255,255,0.05); }
-        body, html { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 0; height: 100vh; overflow: hidden; }
+        :root { --bg: #050a12; --blue: #4db5ff; --gold: #ff9d00; --glass: rgba(255,255,255,0.08); }
+        body, html { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 0; height: 100vh; overflow: hidden; user-select: none; }
 
         /* אנימציות */
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        .page-anim { animation: slideUp 0.4s ease-out; }
+        @keyframes popOut { 0% { transform: scale(1); } 50% { transform: scale(0.9); } 100% { transform: scale(1); } }
+        @keyframes floatUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-100px); opacity: 0; } }
+        @keyframes slideIn { from { transform: translateX(50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
         /* חסימת דסקטופ */
-        #pc-blocker { display: none; flex-direction: column; align-items: center; justify-content: center; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg); z-index: 99999; text-align: center; }
+        #pc-blocker { display: none; flex-direction: column; align-items: center; justify-content: center; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg); z-index: 99999; }
         @media (min-width: 769px) { #pc-blocker { display: flex; } #game-app { display: none !important; } }
 
-        /* אפליקציה */
+        /* מבנה אפליקציה */
         #game-app { display: flex; flex-direction: column; height: 100vh; padding: 20px; box-sizing: border-box; }
-        .page { display: none; flex-direction: column; height: 100%; overflow-y: auto; padding-bottom: 80px; }
+        .page { display: none; flex-direction: column; height: 100%; overflow-y: auto; padding-bottom: 100px; animation: slideIn 0.3s ease-out; }
         .active { display: flex; }
 
-        /* עיצוב כרטיסי חנות */
-        .shop-item { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .buy-btn { background: var(--gold); color: #000; border: none; padding: 10px 15px; border-radius: 10px; font-weight: 900; font-size: 12px; }
+        /* חנות דמויות */
+        .character-card { background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 15px; margin-bottom: 15px; display: flex; align-items: center; gap: 15px; }
+        .char-img { width: 60px; height: 60px; background: #1a1a1a; border-radius: 50%; border: 2px solid var(--gold); }
+        .buy-btn { background: var(--gold); color: #000; border: none; padding: 8px 12px; border-radius: 10px; font-weight: 900; font-size: 11px; cursor: pointer; }
 
-        /* מטבע */
-        .coin-btn { width: 240px; margin: 0 auto; display: block; animation: pulse 3s infinite ease-in-out; transition: transform 0.05s; }
-        .coin-btn:active { transform: scale(0.9); animation: none; }
+        /* מטבע ומספרים צפים */
+        .coin-wrap { position: relative; display: flex; justify-content: center; align-items: center; flex-grow: 1; }
+        .coin-btn { width: 250px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .floating-text { position: absolute; color: var(--gold); font-weight: 900; font-size: 24px; pointer-events: none; animation: floatUp 0.8s forwards; }
 
-        /* תפריט תחתון משופר */
-        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; display: flex; background: rgba(13,20,31,0.95); padding: 15px 0; border-top: 1px solid rgba(255,157,0,0.2); backdrop-filter: blur(10px); }
-        .nav-item { flex: 1; text-align: center; font-size: 10px; font-weight: 900; color: #555; transition: 0.3s; }
-        .nav-item.active-nav { color: var(--gold); transform: translateY(-3px); }
+        /* תפריט תחתון */
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; display: flex; background: rgba(13,20,31,0.98); padding: 15px 0; border-top: 1px solid rgba(255,157,0,0.2); }
+        .nav-item { flex: 1; text-align: center; font-size: 10px; font-weight: 900; color: #555; }
+        .nav-item.active-nav { color: var(--gold); }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
     <div id="pc-blocker">
-        <div style="background: #0d141f; padding: 40px; border-radius: 40px; margin-bottom: 30px; border: 1px solid rgba(77,181,255,0.1);">
+        <div style="background: #0d141f; padding: 40px; border-radius: 40px; border: 1px solid rgba(77,181,255,0.1);">
             <img src="qr.png" style="width: 250px; border-radius: 15px;">
         </div>
-        <h1 style="font-size: 30px; font-weight: 800;">Mobile Access Only</h1>
+        <h1 style="color:white; margin-top:20px;">Play on mobile</h1>
     </div>
 
     <div id="game-app">
-        <div id="p-game" class="page active page-anim">
-            <div style="text-align: center; color: var(--gold); font-weight: 800; font-size: 12px; margin-top: 10px;">GOLD CLICKER NOVA</div>
-            <div style="font-size: 60px; font-weight: 900; color: var(--gold); text-align: center; margin: 30px 0;" id="score">0</div>
-            <div style="flex-grow: 1; display: flex; align-items: center;">
+        <div id="p-game" class="page active">
+            <div style="text-align: center; color: var(--gold); font-weight: 800; font-size: 11px;">GOLD CLICKER NOVA</div>
+            <div style="font-size: 60px; font-weight: 900; color: var(--gold); text-align: center; margin: 20px 0;" id="score">0</div>
+            
+            <div class="coin-wrap" id="coin-container">
                 <img id="coin" class="coin-btn" src="https://i.ibb.co/3W6fM5n/Gold-Coin.png">
             </div>
+
             <div style="margin-bottom: 20px;">
                 <div style="display:flex; justify-content:space-between; font-weight:900; color:var(--gold); font-size:11px; margin-bottom:5px">
                     <span>⚡ ENERGY</span>
                     <span id="energy-txt">1000/1000</span>
                 </div>
-                <div style="width:100%; height:10px; background:#1a1a1a; border-radius:10px; overflow:hidden;">
+                <div style="width:100%; height:8px; background:#1a1a1a; border-radius:10px; overflow:hidden;">
                     <div id="energy-bar" style="height:100%; background:var(--gold); width:100%; transition:0.2s;"></div>
                 </div>
             </div>
         </div>
 
-        <div id="p-shop" class="page page-anim">
-            <h1 style="color: var(--gold); font-weight: 900;">INVESTMENTS</h1>
-            <p style="color: #888; margin-bottom: 20px;">Buy bots to earn gold passively.</p>
+        <div id="p-shop" class="page">
+            <h1 style="color: var(--gold); font-weight: 900;">ELITE MINERS</h1>
             
-            <div class="shop-item">
-                <div><b>Micro Bot</b><br><small style="color: var(--blue);">+1 Gold/sec</small></div>
-                <button class="buy-btn" onclick="buyInvesment(1, 500)">500 Gold</button>
+            <div class="character-card">
+                <div class="char-img" style="background: url('https://cdn-icons-png.flaticon.com/512/4333/4333609.png') center/cover;"></div>
+                <div style="flex-grow:1;">
+                    <div style="font-weight:900;">Street Hustler</div>
+                    <div style="font-size:11px; color:var(--blue);">+2 Gold/sec</div>
+                </div>
+                <button class="buy-btn" onclick="buyChar(2, 1000)">1,000</button>
             </div>
-            <div class="shop-item">
-                <div><b>Mining Rig</b><br><small style="color: var(--blue);">+10 Gold/sec</small></div>
-                <button class="buy-btn" onclick="buyInvesment(10, 4500)">4,500 Gold</button>
-            </div>
-        </div>
 
-        <div id="p-profile" class="page page-anim">
-            <h1 style="color: var(--gold); font-weight: 900;">ELITE PROFILE</h1>
-            <div style="background: var(--glass); padding: 25px; border-radius: 20px; text-align: center;">
-                <div style="font-size: 12px; color: #888;">PASSIVE INCOME</div>
-                <div style="font-size: 32px; font-weight: 900; color: var(--blue);" id="pps-display">0 / sec</div>
+            <div class="character-card">
+                <div class="char-img" style="background: url('https://cdn-icons-png.flaticon.com/512/1999/1999064.png') center/cover;"></div>
+                <div style="flex-grow:1;">
+                    <div style="font-weight:900;">Gold Manager</div>
+                    <div style="font-size:11px; color:var(--blue);">+15 Gold/sec</div>
+                </div>
+                <button class="buy-btn" onclick="buyChar(15, 8000)">8,000</button>
+            </div>
+
+            <div class="character-card">
+                <div class="char-img" style="background: url('https://cdn-icons-png.flaticon.com/512/1027/1027650.png') center/cover;"></div>
+                <div style="flex-grow:1;">
+                    <div style="font-weight:900;">Crypto Tycoon</div>
+                    <div style="font-size:11px; color:var(--blue);">+100 Gold/sec</div>
+                </div>
+                <button class="buy-btn" onclick="buyChar(100, 50000)">50,000</button>
             </div>
         </div>
 
         <div class="nav-bar">
             <div class="nav-item active-nav" id="n-game" onclick="showPage('p-game', 'n-game')">GAME</div>
             <div class="nav-item" id="n-shop" onclick="showPage('p-shop', 'n-shop')">SHOP</div>
-            <div class="nav-item" id="n-profile" onclick="showPage('p-profile', 'n-profile')">PROFILE</div>
         </div>
     </div>
 
@@ -112,31 +124,40 @@
             document.getElementById('score').innerText = Math.floor(score).toLocaleString();
             document.getElementById('energy-txt').innerText = energy + "/1000";
             document.getElementById('energy-bar').style.width = (energy / 10) + "%";
-            document.getElementById('pps-display').innerText = pps + " / sec";
             localStorage.setItem('score', score);
             localStorage.setItem('pps', pps);
         }
 
-        function buyInvesment(amount, price) {
+        function createFloatingText(x, y) {
+            const el = document.createElement('div');
+            el.className = 'floating-text';
+            el.innerText = '+1';
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            document.getElementById('coin-container').appendChild(el);
+            setTimeout(() => el.remove(), 800);
+        }
+
+        function buyChar(amount, price) {
             if (score >= price) {
-                score -= price;
-                pps += amount;
-                updateUI();
+                score -= price; pps += amount; updateUI();
                 if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             } else {
-                alert("Not enough gold!");
+                tg.showAlert("Need more gold!");
             }
         }
 
         document.getElementById('coin').addEventListener('touchstart', (e) => {
             e.preventDefault();
             if (energy > 0) {
-                score++; energy--; updateUI();
+                score++; energy--; 
+                const touch = e.touches[0];
+                createFloatingText(touch.pageX - 20, touch.pageY - 100);
+                updateUI();
                 if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
             }
         });
 
-        // רווח פסיבי כל שנייה
         setInterval(() => {
             if (pps > 0) { score += pps; updateUI(); }
             if (energy < 1000) { energy++; updateUI(); }
