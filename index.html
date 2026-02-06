@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gold Clicker Elite</title>
+    <title>Gold Clicker Elite | Web3 Mini-App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
             --gold: #ffd700;
             --gold-dark: #b8860b;
-            --bg-dark: #0a0a0a;
+            --bg-black: #050505;
         }
 
         body { 
-            background: radial-gradient(circle at center, #1c1c1c 0%, #000 100%); 
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); 
             color: #fff; 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             margin: 0; 
             height: 100vh; 
             width: 100vw;
@@ -23,52 +23,45 @@
             justify-content: center; 
             align-items: center; 
             overflow: hidden; 
+            user-select: none;
         }
 
-        /* Desktop Landing Page - Play on Mobile */
-        #mobile-only-overlay {
+        /* Desktop Landing Page */
+        #desktop-overlay {
             display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+            background: #000;
             width: 100%;
             height: 100%;
-            padding: 40px;
-            box-sizing: border-box;
+            position: fixed;
             z-index: 10000;
+            padding: 20px;
         }
 
         .qr-placeholder {
-            width: 220px;
-            height: 220px;
+            width: 200px;
+            height: 200px;
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            border-radius: 30px;
+            border-radius: 24px;
             margin-bottom: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 60px rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.2);
         }
 
-        .desktop-title {
-            color: var(--gold);
-            font-size: 42px;
-            font-weight: 900;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        .desktop-title { font-size: 32px; color: var(--gold); margin-bottom: 10px; font-weight: 800; }
+        .desktop-desc { color: #888; font-size: 16px; max-width: 350px; line-height: 1.6; }
+
+        @media (min-width: 769px) {
+            #desktop-overlay { display: flex; }
+            #game-ui { display: none; }
         }
 
-        .desktop-text {
-            color: #ccc;
-            font-size: 18px;
-            max-width: 400px;
-            line-height: 1.5;
-        }
-
-        /* Game UI */
+        /* Mobile Game Interface */
         #game-ui {
             width: 100%;
             max-width: 480px;
@@ -78,144 +71,72 @@
             justify-content: space-between;
             padding: 20px;
             box-sizing: border-box;
-            background: transparent;
         }
 
-        @media (min-width: 769px) {
-            #mobile-only-overlay { display: flex; }
-            #game-ui { display: none; }
+        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; }
+        .wallet-btn { 
+            background: linear-gradient(90deg, var(--gold-dark), var(--gold)); 
+            color: #000; font-weight: 800; border: none; padding: 10px 18px; 
+            border-radius: 20px; font-size: 12px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
         }
 
-        .score-container {
-            margin-top: 50px;
-            text-align: center;
-        }
+        .score-section { text-align: center; margin-top: 30px; }
+        .score-val { font-size: 60px; font-weight: 900; color: var(--gold); text-shadow: 0 0 25px rgba(255, 215, 0, 0.4); }
+        .score-label { letter-spacing: 5px; font-size: 12px; color: #888; font-weight: bold; }
 
-        .score-val { 
-            font-size: 65px; 
-            font-weight: 900; 
-            color: var(--gold); 
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
-        }
-
-        .score-label {
-            color: var(--gold);
-            font-weight: bold;
-            letter-spacing: 4px;
-            font-size: 14px;
-            opacity: 0.8;
-        }
-
-        .coin-section { 
-            flex-grow: 1; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            position: relative;
-        }
-
+        .coin-box { flex-grow: 1; display: flex; justify-content: center; align-items: center; position: relative; }
         #coin { 
-            width: 80%; 
-            max-width: 280px; 
-            aspect-ratio: 1/1; 
-            cursor: pointer; 
-            transition: transform 0.05s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.3));
+            width: 280px; aspect-ratio: 1/1; cursor: pointer; 
+            transition: transform 0.05s; filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.25));
             -webkit-tap-highlight-color: transparent;
-            z-index: 5;
         }
-
         #coin:active { transform: scale(0.92); }
 
-        /* Ripple Effect */
-        .ripple {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: rgba(255, 215, 0, 0.5);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            animation: ripple-effect 0.5s ease-out forwards;
-        }
+        .footer { padding-bottom: 40px; }
+        .energy-info { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 800; color: var(--gold); font-size: 13px; }
+        .bar-wrap { width: 100%; height: 14px; background: rgba(255,255,255,0.05); border-radius: 10px; border: 1px solid rgba(255,215,0,0.1); overflow: hidden; }
+        #energy-fill { height: 100%; width: 100%; background: linear-gradient(90deg, #b8860b, #ffd700); transition: width 0.2s; }
 
-        @keyframes ripple-effect {
-            from { width: 0; height: 0; opacity: 1; }
-            to { width: 500px; height: 500px; opacity: 0; }
-        }
-
-        .floating-gold {
-            position: absolute;
-            color: var(--gold);
-            font-size: 38px;
-            font-weight: 900;
-            pointer-events: none;
-            animation: floatUp 0.8s ease-out forwards;
-        }
-
-        @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-160px) scale(1.3); }
-        }
-
-        .footer { padding-bottom: 40px; padding-left: 20px; padding-right: 20px; }
+        /* Effects */
+        .tap-effect { position: absolute; color: var(--gold); font-size: 32px; font-weight: 900; pointer-events: none; animation: floatUp 0.8s ease-out forwards; }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-150px); } }
         
-        .energy-stats {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-weight: 900;
-            color: var(--gold);
-            font-size: 14px;
-            text-transform: uppercase;
-        }
-
-        .bar-bg { 
-            width: 100%; 
-            height: 16px; 
-            background: rgba(255,255,255,0.05); 
-            border-radius: 20px; 
-            border: 1px solid rgba(255,215,0,0.2); 
-            overflow: hidden; 
-        }
-
-        #energy-bar { 
-            height: 100%; 
-            width: 100%; 
-            background: linear-gradient(90deg, var(--gold-dark), var(--gold)); 
-            box-shadow: 0 0 15px var(--gold-dark);
-            transition: width 0.15s linear;
-        }
+        .ripple { position: absolute; border: 2px solid var(--gold); border-radius: 50%; pointer-events: none; animation: rippleOut 0.5s ease-out forwards; }
+        @keyframes rippleOut { from { width: 0; height: 0; opacity: 0.5; } to { width: 300px; height: 300px; opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <div id="mobile-only-overlay">
-        <div class="qr-placeholder">
-            <span style="font-size: 80px;">📱</span>
-        </div>
-        <h1 class="desktop-title">Play on Mobile</h1>
-        <p class="desktop-text">
-            To enjoy the full experience and start earning gold, please open this bot on your mobile device.
-        </p>
+    <div id="desktop-overlay">
+        <div class="qr-placeholder"><span style="font-size: 60px;">📱</span></div>
+        <h1 class="desktop-title">PLAY ON MOBILE</h1>
+        <p class="desktop-desc">This elite experience is optimized for mobile devices. Please open this link within your Telegram mobile app to start earning.</p>
     </div>
 
     <div id="game-ui">
-        <div class="score-container">
-            <div class="score-val" id="score">0</div>
-            <div class="score-label">GOLD COINS</div>
+        <div class="top-nav">
+            <div style="font-weight: 900; color: var(--gold);">ELITE v1.0</div>
+            <button class="wallet-btn" onclick="alert('Wallet Connection coming soon!')">Connect Wallet</button>
         </div>
-        
-        <div class="coin-section">
-            <img id="coin" src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Gold_coin_icon.png" alt="Gold Coin">
+
+        <div class="score-section">
+            <div class="score-val" id="score">0</div>
+            <div class="score-label">GOLD BALANCE</div>
+        </div>
+
+        <div class="coin-box" id="click-zone">
+            <img id="coin" src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Gold_coin_icon.png" alt="Coin">
         </div>
 
         <div class="footer">
-            <div class="energy-stats">
-                <span>⚡ Energy</span>
-                <span><span id="energy-text">1000</span> / 1000</span>
+            <div class="energy-info">
+                <span>⚡ ENERGY</span>
+                <span><span id="energy-count">1000</span>/1000</span>
             </div>
-            <div class="bar-bg"><div id="energy-bar"></div></div>
+            <div class="bar-wrap">
+                <div id="energy-fill"></div>
+            </div>
         </div>
     </div>
 
@@ -223,34 +144,31 @@
         let score = parseInt(localStorage.getItem('score')) || 0;
         let energy = parseInt(localStorage.getItem('energy')) || 1000;
         const tg = window.Telegram.WebApp;
-        
         tg.expand();
 
-        function updateUI() {
+        function update() {
             document.getElementById('score').innerText = score.toLocaleString();
-            document.getElementById('energy-text').innerText = energy;
-            document.getElementById('energy-bar').style.width = (energy / 10) + "%";
+            document.getElementById('energy-count').innerText = energy;
+            document.getElementById('energy-fill').style.width = (energy / 10) + "%";
             localStorage.setItem('score', score);
             localStorage.setItem('energy', energy);
         }
 
-        function createEffects(x, y) {
-            // Ripple
-            const ripple = document.createElement('div');
-            ripple.className = 'ripple';
-            ripple.style.left = x + 'px';
-            ripple.style.top = y + 'px';
-            document.body.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 500);
+        function spawnEffect(x, y) {
+            const effect = document.createElement('div');
+            effect.className = 'tap-effect';
+            effect.innerText = '+1';
+            effect.style.left = (x - 20) + 'px';
+            effect.style.top = (y - 50) + 'px';
+            document.body.appendChild(effect);
+            setTimeout(() => effect.remove(), 800);
 
-            // Floating +1
-            const float = document.createElement('div');
-            float.className = 'floating-gold';
-            float.innerText = '+1';
-            float.style.left = (x - 20) + 'px';
-            float.style.top = (y - 60) + 'px';
-            document.body.appendChild(float);
-            setTimeout(() => float.remove(), 800);
+            const rip = document.createElement('div');
+            rip.className = 'ripple';
+            rip.style.left = x + 'px';
+            rip.style.top = y + 'px';
+            document.body.appendChild(rip);
+            setTimeout(() => rip.remove(), 500);
         }
 
         document.getElementById('coin').addEventListener('touchstart', (e) => {
@@ -258,22 +176,15 @@
             if (energy > 0) {
                 score++;
                 energy--;
-                updateUI();
+                update();
                 const touch = e.touches[0];
-                createEffects(touch.pageX, touch.pageY);
+                spawnEffect(touch.pageX, touch.pageY);
                 if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
             }
         });
 
-        // Fast energy recovery for better UX
-        setInterval(() => {
-            if (energy < 1000) {
-                energy++;
-                updateUI();
-            }
-        }, 1200);
-
-        updateUI();
+        setInterval(() => { if (energy < 1000) { energy++; update(); } }, 1500);
+        update();
     </script>
 </body>
 </html>
