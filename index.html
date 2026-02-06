@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Elite Gold Clicker | Mobile Only</title>
+    <title>Elite Gold Clicker</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -13,104 +13,125 @@
             --gold: #ff9d00;
         }
 
-        body { 
+        body, html { 
             background-color: var(--bg-dark); 
             color: #fff; 
             font-family: 'Inter', sans-serif;
-            margin: 0; 
-            height: 100vh; 
+            margin: 0; padding: 0;
+            height: 100vh; width: 100vw;
             overflow: hidden;
         }
 
-        /* --- DESKTOP BLOCKER (The Page you see on PC) --- */
-        #desktop-overlay {
-            display: none; /* Hidden by default on mobile */
+        /* --- DESKTOP BLOCKER STYLE --- */
+        #desktop-blocker {
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            width: 100%;
-            height: 100vh;
-            background-color: var(--bg-dark);
             position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 9999;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: var(--bg-dark);
+            z-index: 99999;
+            text-align: center;
         }
 
-        .qr-container {
+        .qr-box {
             background: #0d141f;
             padding: 40px;
             border-radius: 40px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             position: relative;
+            border: 1px solid rgba(77, 181, 255, 0.1);
         }
 
-        .qr-frame {
+        .qr-image {
             width: 280px;
             height: 280px;
-            /* Replace YOUR_BOT_URL with your actual Telegram bot link */
-            background: white url('https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=https://t.me/YourBotLink') no-repeat center;
+            background: white url('https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=https://t.me/YourBotName') no-repeat center;
             background-size: 90%;
             border-radius: 20px;
         }
 
-        .desktop-title { font-size: 38px; font-weight: 800; margin-bottom: 10px; }
-        .desktop-subtitle { font-size: 18px; color: var(--accent-blue); font-weight: 600; max-width: 450px; }
-
-        /* Logic: If screen is wider than 768px, show blocker and hide game */
-        @media (min-width: 769px) {
-            #desktop-overlay { display: flex; }
-            #game-ui { display: none; }
+        .qr-logo-overlay {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 65px; height: 65px;
+            background: #0d141f;
+            border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid var(--bg-dark);
         }
 
-        /* --- MOBILE GAME UI --- */
-        #game-ui {
+        .d-title { font-size: 32px; font-weight: 800; margin: 10px 0; }
+        .d-subtitle { font-size: 18px; color: var(--accent-blue); font-weight: 600; max-width: 400px; line-height: 1.4; }
+
+        /* Detection Logic */
+        @media (min-width: 769px) {
+            #desktop-blocker { display: flex; }
+            #mobile-app { display: none !important; }
+        }
+
+        /* --- MOBILE APP STYLE --- */
+        #mobile-app {
             display: flex;
             flex-direction: column;
             height: 100vh;
-            max-width: 480px;
+            width: 100%;
+            max-width: 500px;
             margin: 0 auto;
             padding: 20px;
             box-sizing: border-box;
+            justify-content: space-between;
         }
 
-        .score-val { font-size: 60px; font-weight: 900; color: var(--gold); text-align: center; margin-top: 40px; }
-        
-        .coin-box { flex-grow: 1; display: flex; justify-content: center; align-items: center; }
-        #coin-img { width: 250px; transition: transform 0.05s; -webkit-tap-highlight-color: transparent; }
-        #coin-img:active { transform: scale(0.9); }
+        .score { font-size: 65px; font-weight: 900; color: var(--gold); text-align: center; margin-top: 50px; }
+        .coin-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; }
+        .coin-btn { width: 260px; filter: drop-shadow(0 0 20px rgba(255, 157, 0, 0.2)); cursor: pointer; transition: transform 0.05s; -webkit-tap-highlight-color: transparent; }
+        .coin-btn:active { transform: scale(0.92); }
 
-        .energy-wrap { padding-bottom: 30px; }
-        .bar-bg { width: 100%; height: 12px; background: #1a1a1a; border-radius: 10px; border: 1px solid #333; overflow: hidden; }
-        .bar-fill { height: 100%; background: linear-gradient(90deg, #ff9d00, #ffdb4d); width: 100%; transition: width 0.2s; }
+        .energy-section { margin-bottom: 40px; }
+        .energy-info { display: flex; justify-content: space-between; font-weight: bold; color: var(--gold); font-size: 13px; margin-bottom: 10px; }
+        .progress-container { width: 100%; height: 12px; background: #1a1a1a; border-radius: 20px; border: 1px solid #333; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #ff9d00, #ffdb4d); width: 100%; }
+        
+        .nav { display: flex; justify-content: space-around; border-top: 1px solid #222; padding-top: 15px; font-size: 11px; font-weight: bold; color: #555; }
     </style>
 </head>
 <body>
 
-    <div id="desktop-overlay">
-        <div class="qr-container">
-            <div class="qr-frame"></div>
+    <div id="desktop-blocker">
+        <div class="qr-box">
+            <div class="qr-image"></div>
+            <div class="qr-logo-overlay">
+                <img src="https://i.ibb.co/Lz0X5vQ/Elite-Gold-Clicker-Logo.png" style="width: 45px;">
+            </div>
         </div>
-        <h1 class="desktop-title">Play on mobile</h1>
-        <p class="desktop-subtitle">Get the best experience using a mobile device.<br>Scan the QR code to start.</p>
+        <h1 class="d-title">Play on mobile</h1>
+        <p class="d-subtitle">Get the best experience using a mobile device. Scan the QR code to start.</p>
     </div>
 
-    <div id="game-ui">
-        <div style="text-align: center; color: var(--accent-blue); font-weight: bold; letter-spacing: 2px;">ELITE CLICKER</div>
-        <div class="score-val" id="score">0</div>
-        
-        <div class="coin-box">
-            <img id="coin-img" src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Gold_coin_icon.png" alt="Coin">
+    <div id="mobile-app">
+        <div style="text-align: center; color: var(--gold); font-weight: bold; font-size: 12px; letter-spacing: 2px;">GOLD CLICKER</div>
+        <div class="score" id="score">0</div>
+
+        <div class="coin-area">
+            <img id="coin" class="coin-btn" src="https://i.ibb.co/3W6fM5n/Gold-Coin.png" alt="Gold Coin">
         </div>
 
-        <div class="energy-wrap">
-            <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; color: var(--gold); margin-bottom: 8px;">
-                <span>ENERGY</span>
+        <div class="energy-section">
+            <div class="energy-info">
+                <span>⚡ ENERGY</span>
                 <span><span id="energy-num">1000</span>/1000</span>
             </div>
-            <div class="bar-bg"><div id="energy-bar" class="bar-fill"></div></div>
+            <div class="progress-container"><div id="energy-bar" class="progress-fill"></div></div>
+            
+            <div class="nav" style="margin-top: 25px;">
+                <span>GAME</span>
+                <span>SHOP</span>
+                <span>PROFILE</span>
+            </div>
         </div>
     </div>
 
@@ -120,23 +141,30 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        function update() {
+        // Block logic for PC
+        if (window.innerWidth > 768) {
+            document.getElementById('mobile-app').remove(); // מוחק את המשחק מהקוד אם זה מחשב
+        }
+
+        function updateUI() {
             document.getElementById('score').innerText = score.toLocaleString();
             document.getElementById('energy-num').innerText = energy;
             document.getElementById('energy-bar').style.width = (energy / 10) + "%";
             localStorage.setItem('score', score);
         }
 
-        document.getElementById('coin-img').addEventListener('touchstart', (e) => {
+        document.getElementById('coin').addEventListener('touchstart', (e) => {
             e.preventDefault();
             if (energy > 0) {
-                score++; energy--; update();
+                score++;
+                energy--;
+                updateUI();
                 if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
             }
         });
 
-        setInterval(() => { if (energy < 1000) { energy++; update(); } }, 1500);
-        update();
+        setInterval(() => { if (energy < 1000) { energy++; updateUI(); } }, 1500);
+        updateUI();
     </script>
 </body>
 </html>
