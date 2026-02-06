@@ -3,144 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gold Clicker Elite | Premium</title>
+    <title>Gold Clicker Pro | Web3 Evolution</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #ffd700; --gold-grad: linear-gradient(135deg, #ffd700 0%, #b8860b 100%); }
+        :root { --gold: #ffd700; --gold-grad: linear-gradient(135deg, #ffd700 0%, #b8860b 100%); --glass: rgba(255,255,255,0.05); }
         body { background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; height: 100vh; overflow: hidden; }
         
         #desktop-overlay { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; background: #000; position: fixed; width: 100%; z-index: 10000; }
         @media (min-width: 769px) { #desktop-overlay { display: flex; } }
 
-        #app { height: 100vh; display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; position: relative; }
-        .page { display: none; flex-direction: column; height: 100%; padding: 20px; box-sizing: border-box; }
+        #app { height: 100vh; display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); }
+        .page { display: none; flex-direction: column; height: 100%; padding: 20px; box-sizing: border-box; overflow-y: auto; padding-bottom: 100px; }
         .active { display: flex; }
 
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; }
-        .icon-btn { background: rgba(255,255,255,0.1); border: 1px solid var(--gold); color: var(--gold); padding: 8px; border-radius: 50%; cursor: pointer; font-size: 18px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
-        
-        .score-val { font-size: 50px; font-weight: 900; color: var(--gold); text-align: center; margin-top: 10px; }
+        /* Header Stats */
+        .global-stats { display: flex; justify-content: space-around; background: var(--glass); padding: 10px; border-radius: 15px; font-size: 10px; color: var(--gold); font-weight: bold; margin-bottom: 15px; }
+
+        /* Score Display */
+        .main-score { text-align: center; margin-bottom: 20px; }
+        .score-val { font-size: 50px; font-weight: 900; color: var(--gold); text-shadow: 0 0 20px rgba(255,215,0,0.3); }
+        .profit-val { color: #4caf50; font-size: 12px; font-weight: bold; }
+
+        /* Coin */
         .coin-wrap { flex-grow: 1; display: flex; justify-content: center; align-items: center; position: relative; }
-        #coin { width: 240px; transition: transform 0.05s; -webkit-tap-highlight-color: transparent; filter: drop-shadow(0 0 30px rgba(255,215,0,0.2)); }
+        #coin { width: 240px; transition: transform 0.05s; filter: drop-shadow(0 0 30px rgba(255,215,0,0.2)); -webkit-tap-highlight-color: transparent; }
         #coin:active { transform: scale(0.92); }
 
-        .nav-bar { display: flex; background: rgba(255,255,255,0.05); padding: 15px 0; border-top: 1px solid rgba(255,215,0,0.1); }
-        .nav-item { flex: 1; text-align: center; color: #666; font-size: 12px; font-weight: bold; }
-        .nav-item.active-nav { color: var(--gold); }
+        /* Cards & Tasks */
+        .item-card { background: var(--glass); padding: 15px; border-radius: 18px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,215,0,0.1); }
+        .btn-action { background: var(--gold-grad); color: #000; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 900; font-size: 12px; cursor: pointer; }
+        .btn-action:disabled { background: #333; color: #666; }
 
-        .setting-row { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .toggle-btn { background: var(--gold-grad); color: #000; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; }
-        
-        .tap-msg { position: absolute; color: var(--gold); font-size: 30px; font-weight: 900; animation: floatUp 0.7s forwards; pointer-events: none; }
-        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
+        /* Nav Bar */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; max-width: 480px; display: flex; background: rgba(10,10,10,0.95); backdrop-filter: blur(10px); padding: 15px 0; border-top: 1px solid rgba(255,215,0,0.1); z-index: 100; }
+        .nav-item { flex: 1; text-align: center; color: #555; font-size: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .nav-item.active-nav { color: var(--gold); transform: translateY(-3px); }
+
+        .tap-anim { position: absolute; color: var(--gold); font-size: 32px; font-weight: 900; animation: float 0.7s forwards; pointer-events: none; }
+        @keyframes float { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-120px); } }
     </style>
 </head>
 <body>
 
     <div id="desktop-overlay">
-        <h1 style="color:var(--gold)">MOBILE ONLY</h1>
-        <p>Please open on your smartphone device.</p>
+        <h1 style="color:var(--gold)">ELITE ACCESS ONLY</h1>
+        <p>Please launch via Telegram Mobile App</p>
     </div>
 
-    <audio id="bg-music" loop>
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="bg-music" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
 
     <div id="app">
-        <div id="game-page" class="page active">
-            <div class="header">
-                <button class="icon-btn" onclick="showPage('settings-page')">⚙️</button>
-                <div style="font-weight:900; color:var(--gold)">ELITE CLUB</div>
-                <button class="icon-btn" onclick="alert('Connect Wallet coming soon!')">💎</button>
+        <div style="padding: 15px 20px 0 20px;">
+            <div class="global-stats">
+                <span>PLAYERS: 1,248,302</span>
+                <span>TOTAL MINED: 5.2B</span>
             </div>
-            <div class="score-val" id="score">0</div>
+        </div>
+
+        <div id="game-page" class="page active">
+            <div class="main-score">
+                <div class="score-val" id="score">0</div>
+                <div class="profit-val">Profit per sec: +<span id="pps">0</span></div>
+            </div>
             <div class="coin-wrap"><img id="coin" src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Gold_coin_icon.png"></div>
             <div class="footer">
-                <div style="display:flex; justify-content:space-between; color:var(--gold); font-size:12px; font-weight:bold">
+                <div style="display:flex; justify-content:space-between; color:var(--gold); font-size:11px; font-weight:bold; margin-bottom:5px;">
                     <span>⚡ ENERGY</span>
                     <span><span id="energy-text">1000</span>/1000</span>
                 </div>
-                <div style="width:100%; height:10px; background:#222; border-radius:10px; margin-top:5px; overflow:hidden">
+                <div style="width:100%; height:8px; background:#222; border-radius:10px; overflow:hidden">
                     <div id="energy-bar" style="height:100%; width:100%; background:var(--gold-grad)"></div>
                 </div>
             </div>
         </div>
 
-        <div id="settings-page" class="page">
-            <h1 style="color:var(--gold)">SETTINGS</h1>
-            <div class="setting-row">
-                <span>Music / Sound</span>
-                <button id="music-toggle" class="toggle-btn" onclick="toggleMusic()">ON</button>
+        <div id="mine-page" class="page">
+            <h1 style="color:var(--gold)">MINING RIGS</h1>
+            <div class="item-card">
+                <div><b>Gold Mine</b><br><small>+2 Gold/sec</small></div>
+                <button class="btn-action" onclick="buyRig(2, 5000, this)">Price: 5k</button>
             </div>
-            <div class="setting-row">
-                <span>Language</span>
-                <button class="toggle-btn" style="opacity:0.5">English (Soon)</button>
+            <div class="item-card">
+                <div><b>Crypto Server</b><br><small>+10 Gold/sec</small></div>
+                <button class="btn-action" onclick="buyRig(10, 25000, this)">Price: 25k</button>
             </div>
-            <button class="toggle-btn" style="width:100%; margin-top:20px" onclick="showPage('game-page')">BACK TO GAME</button>
         </div>
 
         <div id="tasks-page" class="page">
-            <h1 style="color:var(--gold)">TASKS</h1>
-            <p>Complete tasks to earn more gold!</p>
+            <h1 style="color:var(--gold)">DAILY REWARDS</h1>
+            <div class="item-card">
+                <div><b>Day 1 Bonus</b><br><small>Claim your daily gift</small></div>
+                <button id="daily-btn" class="btn-action" onclick="claimDaily()">Claim</button>
+            </div>
+            <h1 style="color:var(--gold); font-size:18px; margin-top:20px;">SOCIAL TASKS</h1>
+            <div class="item-card">
+                <div><b>Join Community</b><br><small>+10,000 Gold</small></div>
+                <button class="btn-action" onclick="claimTask(10000, this)">Join</button>
+            </div>
+        </div>
+
+        <div id="settings-page" class="page">
+            <h1 style="color:var(--gold)">SETTINGS</h1>
+            <div class="item-card"><span>Sound / Music</span><button class="btn-action" onclick="toggleMusic()">MUTE</button></div>
+            <div class="item-card"><span>Wallet</span><button class="btn-action" disabled>SOON</button></div>
         </div>
 
         <div class="nav-bar">
-            <div class="nav-item active-nav" onclick="showPage('game-page')">GAME</div>
-            <div class="nav-item" onclick="showPage('tasks-page')">TASKS</div>
+            <div class="nav-item active-nav" onclick="nav('game-page', this)">GAME</div>
+            <div class="nav-item" onclick="nav('mine-page', this)">MINE</div>
+            <div class="nav-item" onclick="nav('tasks-page', this)">TASKS</div>
+            <div class="nav-item" onclick="nav('settings-page', this)">SETTINGS</div>
         </div>
     </div>
 
     <script>
         let score = parseInt(localStorage.getItem('score')) || 0;
-        let energy = parseInt(localStorage.getItem('energy')) || 1000;
+        let energy = 1000;
+        let profitPerSec = parseInt(localStorage.getItem('pps')) || 0;
         let musicOn = true;
         const bgMusic = document.getElementById('bg-music');
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        function showPage(id) {
+        function nav(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
             document.getElementById(id).classList.add('active');
-        }
-
-        function toggleMusic() {
-            musicOn = !musicOn;
-            if (musicOn) {
-                bgMusic.play();
-                document.getElementById('music-toggle').innerText = "ON";
-            } else {
-                bgMusic.pause();
-                document.getElementById('music-toggle').innerText = "OFF";
-            }
+            el.classList.add('active-nav');
         }
 
         function updateUI() {
             document.getElementById('score').innerText = score.toLocaleString();
+            document.getElementById('pps').innerText = profitPerSec;
             document.getElementById('energy-text').innerText = energy;
             document.getElementById('energy-bar').style.width = (energy/10) + "%";
             localStorage.setItem('score', score);
-            localStorage.setItem('energy', energy);
+            localStorage.setItem('pps', profitPerSec);
+        }
+
+        function buyRig(inc, price, btn) {
+            if(score >= price) {
+                score -= price; profitPerSec += inc; updateUI();
+                btn.innerText = "UPGRADED"; btn.disabled = true;
+            }
+        }
+
+        function claimDaily() {
+            score += 5000; updateUI();
+            const btn = document.getElementById('daily-btn');
+            btn.disabled = true; btn.innerText = "DONE";
+        }
+
+        function claimTask(reward, btn) {
+            score += reward; updateUI();
+            btn.disabled = true; btn.innerText = "DONE";
+        }
+
+        function toggleMusic() {
+            musicOn = !musicOn;
+            musicOn ? bgMusic.play() : bgMusic.pause();
         }
 
         document.getElementById('coin').addEventListener('touchstart', (e) => {
             e.preventDefault();
-            // Start music on first tap (browser requirement)
-            if (musicOn && bgMusic.paused) bgMusic.play();
-
+            if(musicOn && bgMusic.paused) bgMusic.play();
             if(energy > 0) {
                 score++; energy--; updateUI();
                 const t = e.touches[0];
                 const m = document.createElement('div');
-                m.className = 'tap-msg'; m.innerText = '+1';
+                m.className = 'tap-anim'; m.innerText = '+1';
                 m.style.left = t.pageX + 'px'; m.style.top = t.pageY + 'px';
                 document.body.appendChild(m);
                 setTimeout(() => m.remove(), 700);
-                if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+                if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
             }
         });
 
-        setInterval(() => { if(energy < 1000) { energy++; updateUI(); } }, 1500);
+        // Loop Functions
+        setInterval(() => { if(energy < 1000) { energy += 2; updateUI(); } }, 1000);
+        setInterval(() => { if(profitPerSec > 0) { score += profitPerSec; updateUI(); } }, 1000);
+        
         updateUI();
     </script>
 </body>
