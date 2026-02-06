@@ -3,167 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gold Clicker | Profile & Shop</title>
+    <title>Elite Gold Clicker | Mobile Only</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #ffd700; --gold-grad: linear-gradient(135deg, #ffd700 0%, #b8860b 100%); --glass: rgba(255,255,255,0.05); }
-        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; height: 100vh; overflow: hidden; }
+        :root {
+            --bg-dark: #050a12;
+            --accent-blue: #4db5ff;
+            --gold: #ff9d00;
+        }
+
+        body { 
+            background-color: var(--bg-dark); 
+            color: #fff; 
+            font-family: 'Inter', sans-serif;
+            margin: 0; 
+            height: 100vh; 
+            overflow: hidden;
+        }
+
+        /* --- DESKTOP BLOCKER (The Page you see on PC) --- */
+        #desktop-overlay {
+            display: none; /* Hidden by default on mobile */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            height: 100vh;
+            background-color: var(--bg-dark);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 9999;
+        }
+
+        .qr-container {
+            background: #0d141f;
+            padding: 40px;
+            border-radius: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .qr-frame {
+            width: 280px;
+            height: 280px;
+            /* Replace YOUR_BOT_URL with your actual Telegram bot link */
+            background: white url('https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=https://t.me/YourBotLink') no-repeat center;
+            background-size: 90%;
+            border-radius: 20px;
+        }
+
+        .desktop-title { font-size: 38px; font-weight: 800; margin-bottom: 10px; }
+        .desktop-subtitle { font-size: 18px; color: var(--accent-blue); font-weight: 600; max-width: 450px; }
+
+        /* Logic: If screen is wider than 768px, show blocker and hide game */
+        @media (min-width: 769px) {
+            #desktop-overlay { display: flex; }
+            #game-ui { display: none; }
+        }
+
+        /* --- MOBILE GAME UI --- */
+        #game-ui {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .score-val { font-size: 60px; font-weight: 900; color: var(--gold); text-align: center; margin-top: 40px; }
         
-        #app { height: 100vh; display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); }
-        .page { display: none; flex-direction: column; height: 100%; padding: 20px; box-sizing: border-box; overflow-y: auto; padding-bottom: 100px; }
-        .active { display: flex; }
+        .coin-box { flex-grow: 1; display: flex; justify-content: center; align-items: center; }
+        #coin-img { width: 250px; transition: transform 0.05s; -webkit-tap-highlight-color: transparent; }
+        #coin-img:active { transform: scale(0.9); }
 
-        /* Profile Elements */
-        .profile-card { background: var(--glass); border: 1px solid var(--gold); padding: 20px; border-radius: 20px; text-align: center; margin-bottom: 20px; }
-        .xp-bar-bg { width: 100%; height: 10px; background: #222; border-radius: 10px; margin: 15px 0; overflow: hidden; }
-        .xp-bar-fill { height: 100%; background: var(--gold-grad); width: 0%; transition: width 0.5s; }
-
-        /* Shop Cards */
-        .shop-card { background: var(--glass); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,215,0,0.1); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .buy-btn { background: var(--gold-grad); color: #000; border: none; padding: 8px 15px; border-radius: 10px; font-weight: 900; font-size: 11px; cursor: pointer; }
-        .buy-btn:disabled { background: #333; color: #666; }
-
-        /* Game UI */
-        .score-display { text-align: center; font-size: 45px; font-weight: 900; color: var(--gold); margin: 20px 0; }
-        .coin-wrap { flex-grow: 1; display: flex; justify-content: center; align-items: center; }
-        #coin { width: 220px; transition: transform 0.05s; -webkit-tap-highlight-color: transparent; }
-        #coin:active { transform: scale(0.9); }
-
-        /* Nav */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; max-width: 480px; display: flex; background: rgba(10,10,10,0.95); padding: 15px 0; border-top: 1px solid rgba(255,215,0,0.2); }
-        .nav-item { flex: 1; text-align: center; color: #555; font-size: 10px; font-weight: bold; }
-        .nav-item.active-nav { color: var(--gold); }
-
-        .tap-anim { position: absolute; color: var(--gold); font-size: 30px; font-weight: 900; animation: float 0.6s forwards; pointer-events: none; }
-        @keyframes float { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
+        .energy-wrap { padding-bottom: 30px; }
+        .bar-bg { width: 100%; height: 12px; background: #1a1a1a; border-radius: 10px; border: 1px solid #333; overflow: hidden; }
+        .bar-fill { height: 100%; background: linear-gradient(90deg, #ff9d00, #ffdb4d); width: 100%; transition: width 0.2s; }
     </style>
 </head>
 <body>
 
-    <div id="app">
-        <div id="game-page" class="page active">
-            <div style="text-align:center; color:var(--gold); font-weight:bold; font-size:12px; letter-spacing:2px">GOLD CLICKER</div>
-            <div class="score-display" id="score">0</div>
-            <div class="coin-wrap"><img id="coin" src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Gold_coin_icon.png"></div>
-            <div class="footer">
-                <div style="display:flex; justify-content:space-between; color:var(--gold); font-size:11px; font-weight:bold; margin-bottom:5px">
-                    <span>⚡ ENERGY</span>
-                    <span id="energy-text">1000/1000</span>
-                </div>
-                <div class="xp-bar-bg"><div id="energy-bar" class="xp-bar-fill" style="width:100%"></div></div>
-            </div>
+    <div id="desktop-overlay">
+        <div class="qr-container">
+            <div class="qr-frame"></div>
+        </div>
+        <h1 class="desktop-title">Play on mobile</h1>
+        <p class="desktop-subtitle">Get the best experience using a mobile device.<br>Scan the QR code to start.</p>
+    </div>
+
+    <div id="game-ui">
+        <div style="text-align: center; color: var(--accent-blue); font-weight: bold; letter-spacing: 2px;">ELITE CLICKER</div>
+        <div class="score-val" id="score">0</div>
+        
+        <div class="coin-box">
+            <img id="coin-img" src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Gold_coin_icon.png" alt="Coin">
         </div>
 
-        <div id="profile-page" class="page">
-            <h1 style="color:var(--gold)">PROFILE</h1>
-            <div class="profile-card">
-                <div style="font-size:14px; color:#888">Current Rank</div>
-                <h2 id="p-rank" style="color:var(--gold); margin:5px 0">BRONZE</h2>
-                <div class="xp-bar-bg"><div id="xp-fill" class="xp-bar-fill"></div></div>
-                <div id="xp-desc" style="font-size:12px; color:#ccc">Next rank in: 5,000 gold</div>
+        <div class="energy-wrap">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; color: var(--gold); margin-bottom: 8px;">
+                <span>ENERGY</span>
+                <span><span id="energy-num">1000</span>/1000</span>
             </div>
-            <div class="profile-card">
-                <div style="font-size:14px; color:#888">Total Balance</div>
-                <h2 id="p-balance" style="color:var(--gold)">0</h2>
-            </div>
-        </div>
-
-        <div id="shop-page" class="page">
-            <h1 style="color:var(--gold)">ELITE SHOP</h1>
-            
-            <h3 style="color:#888; font-size:14px">BOTS (Passive Income)</h3>
-            <div class="shop-card">
-                <div><b>Mini Bot</b><br><small>+1 gold/sec</small></div>
-                <button id="buy-bot-1" class="buy-btn" onclick="buyItem('bot', 1, 5000, 'buy-bot-1')">5,000</button>
-            </div>
-            
-            <h3 style="color:#888; font-size:14px; margin-top:20px">SKINS (Visual)</h3>
-            <div class="shop-card">
-                <div><b>Silver Coin</b><br><small>Cool silver look</small></div>
-                <button id="skin-silver" class="buy-btn" onclick="buyItem('skin', 'https://cdn-icons-png.flaticon.com/512/3241/3241477.png', 10000, 'skin-silver')">10,000</button>
-            </div>
-            <div class="shop-card">
-                <div><b>Diamond Coin</b><br><small>Luxury Diamond</small></div>
-                <button id="skin-diamond" class="buy-btn" onclick="buyItem('skin', 'https://cdn-icons-png.flaticon.com/512/4214/4214061.png', 50000, 'skin-diamond')">50,000</button>
-            </div>
-        </div>
-
-        <div class="nav-bar">
-            <div class="nav-item active-nav" id="n-game" onclick="nav('game-page')">GAME</div>
-            <div class="nav-item" id="n-shop" onclick="nav('shop-page')">SHOP</div>
-            <div class="nav-item" id="n-profile" onclick="nav('profile-page')">PROFILE</div>
+            <div class="bar-bg"><div id="energy-bar" class="bar-fill"></div></div>
         </div>
     </div>
 
     <script>
         let score = parseInt(localStorage.getItem('score')) || 0;
         let energy = 1000;
-        let pps = parseInt(localStorage.getItem('pps')) || 0;
-        let currentSkin = localStorage.getItem('skin') || 'https://upload.wikimedia.org/wikipedia/commons/d/d6/Gold_coin_icon.png';
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        function nav(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
-            document.getElementById(id).classList.add('active');
-            updateProfile();
-        }
-
-        function updateUI() {
+        function update() {
             document.getElementById('score').innerText = score.toLocaleString();
-            document.getElementById('energy-text').innerText = energy + "/1000";
-            document.getElementById('energy-bar').style.width = (energy/10) + "%";
-            document.getElementById('coin').src = currentSkin;
+            document.getElementById('energy-num').innerText = energy;
+            document.getElementById('energy-bar').style.width = (energy / 10) + "%";
             localStorage.setItem('score', score);
-            localStorage.setItem('pps', pps);
         }
 
-        function updateProfile() {
-            document.getElementById('p-balance').innerText = score.toLocaleString();
-            let nextRank = 5000;
-            let rankName = "BRONZE";
-            
-            if(score >= 5000 && score < 25000) { rankName = "SILVER"; nextRank = 25000; }
-            else if(score >= 25000) { rankName = "GOLD"; nextRank = 100000; }
-            
-            let progress = (score / nextRank) * 100;
-            document.getElementById('p-rank').innerText = rankName;
-            document.getElementById('xp-fill').style.width = Math.min(progress, 100) + "%";
-            document.getElementById('xp-desc').innerText = `Next rank in: ${(nextRank - score).toLocaleString()} gold`;
-        }
-
-        function buyItem(type, value, price, btnId) {
-            if(score >= price) {
-                score -= price;
-                if(type === 'bot') { pps += value; }
-                if(type === 'skin') { currentSkin = value; localStorage.setItem('skin', value); }
-                document.getElementById(btnId).innerText = "OWNED";
-                document.getElementById(btnId).disabled = true;
-                updateUI();
-            } else {
-                alert("Not enough gold!");
-            }
-        }
-
-        document.getElementById('coin').addEventListener('touchstart', (e) => {
+        document.getElementById('coin-img').addEventListener('touchstart', (e) => {
             e.preventDefault();
-            if(energy > 0) {
-                score++; energy--; updateUI();
-                const t = e.touches[0];
-                const m = document.createElement('div');
-                m.className = 'tap-anim'; m.innerText = '+1';
-                m.style.left = t.pageX + 'px'; m.style.top = t.pageY + 'px';
-                document.body.appendChild(m);
-                setTimeout(() => m.remove(), 600);
-                if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+            if (energy > 0) {
+                score++; energy--; update();
+                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
             }
         });
 
-        setInterval(() => { if(energy < 1000) { energy += 1; updateUI(); } }, 2000);
-        setInterval(() => { if(pps > 0) { score += pps; updateUI(); } }, 1000);
-        updateUI();
+        setInterval(() => { if (energy < 1000) { energy++; update(); } }, 1500);
+        update();
     </script>
 </body>
 </html>
