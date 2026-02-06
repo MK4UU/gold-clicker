@@ -1,113 +1,140 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="he">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gold Clicker Pro</title>
+    <title>Gold Clicker Nova | Multi-Lang</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { --bg: #0b0e14; --neon-blue: #00f2ff; --neon-gold: #ffac09; --neon-purple: #bc13fe; }
         body, html { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; padding: 0; height: 100vh; overflow: hidden; }
-        
-        /* מסגרת ניאון */
-        .app-container { height: 100vh; display: flex; flex-direction: column; border: 3px solid var(--neon-blue); box-sizing: border-box; position: relative; }
+        .app-container { height: 100vh; display: flex; flex-direction: column; border: 3px solid var(--neon-blue); box-sizing: border-box; }
 
-        /* ניהול דפים */
+        /* כפתור שפה */
+        #lang-btn { position: absolute; top: 15px; left: 15px; background: var(--neon-purple); border: none; color: white; padding: 5px 10px; border-radius: 8px; font-weight: bold; cursor: pointer; z-index: 1000; }
+
         .page { display: none; flex-direction: column; flex-grow: 1; padding: 20px; animation: fadeIn 0.3s; }
         .active-page { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* כותרת */
-        .header { display: flex; justify-content: space-around; padding: 10px; background: rgba(255,255,255,0.05); }
+        .header { display: flex; justify-content: space-around; padding: 10px 10px 10px 60px; background: rgba(255,255,255,0.05); }
         .stat { text-align: center; }
         .stat-label { font-size: 10px; color: #888; }
         .stat-num { font-size: 18px; font-weight: bold; color: var(--neon-gold); }
 
-        /* אזור המשחק והמטבע */
         .game-area { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #score-display { font-size: 50px; font-weight: 900; margin-bottom: 20px; text-shadow: 0 0 10px var(--neon-gold); }
+        #score-display { font-size: 55px; font-weight: 900; margin-bottom: 20px; text-shadow: 0 0 10px var(--neon-gold); }
         
         .coin-box { 
             width: 200px; height: 200px; 
             background: radial-gradient(circle, var(--neon-gold) 0%, transparent 70%);
             display: flex; align-items: center; justify-content: center;
-            font-size: 120px; border-radius: 50%; cursor: pointer;
+            font-size: 110px; border-radius: 50%; cursor: pointer;
             transition: transform 0.05s; user-select: none; -webkit-tap-highlight-color: transparent;
         }
         .coin-box:active { transform: scale(0.9); }
 
-        /* תפריט תחתון */
-        .nav { height: 70px; display: flex; background: #161b22; border-top: 1px solid var(--neon-blue); }
+        .nav { height: 75px; display: flex; background: #161b22; border-top: 1px solid var(--neon-blue); }
         .nav-item { flex: 1; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; color: #555; cursor: pointer; }
         .nav-item.active { color: var(--neon-blue); text-shadow: 0 0 5px var(--neon-blue); }
 
-        /* אלמנטים צפים */
-        .plus-one { position: absolute; color: var(--neon-gold); font-weight: bold; font-size: 24px; pointer-events: none; animation: fly 0.8s forwards; }
-        @keyframes fly { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-100px); opacity: 0; } }
+        .plus-one { position: absolute; color: var(--neon-gold); font-weight: bold; font-size: 24px; animation: fly 0.8s forwards; pointer-events: none; }
+        @keyframes fly { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-120px); opacity: 0; } }
         
-        .card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
+        .card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
 
     <div class="app-container">
+        <button id="lang-btn" onclick="toggleLang()">EN</button>
+
         <div class="header">
-            <div class="stat"><div class="stat-label">רווח לשנייה</div><div id="pps-display" class="stat-num">0</div></div>
-            <div class="stat"><div class="stat-label">זהב</div><div id="balance-display" class="stat-num">0</div></div>
+            <div class="stat"><div id="label-income" class="stat-label">רווח לשנייה</div><div id="pps-display" class="stat-num">0</div></div>
+            <div class="stat"><div id="label-balance" class="stat-label">זהב</div><div id="balance-display" class="stat-num">0</div></div>
         </div>
 
         <div id="page-mine" class="page active-page">
             <div class="game-area">
                 <div id="score-display">0</div>
                 <div id="coin" class="coin-box">🪙</div>
-                <p style="margin-top: 30px; color: var(--neon-blue);">לחץ על המטבע!</p>
+                <p id="click-msg" style="margin-top: 30px; color: var(--neon-blue);">לחץ על המטבע!</p>
             </div>
         </div>
 
         <div id="page-shop" class="page">
-            <h2 style="color: var(--neon-blue)">חנות שדרוגים</h2>
+            <h2 id="title-shop" style="color: var(--neon-blue)">חנות שדרוגים</h2>
             <div class="card">
-                <div><b>קליקר אוטומטי</b><br><small>+2 לשנייה</small></div>
-                <button onclick="buy(2, 100)" style="padding: 10px; background: var(--neon-blue); border: none; border-radius: 5px; font-weight: bold;">100</button>
+                <div><b id="item-name">קליקר אוטומטי</b><br><small>+2 /s</small></div>
+                <button onclick="buy(2, 500)" id="buy-btn" style="padding: 10px; background: var(--neon-blue); border: none; border-radius: 8px; font-weight: bold;">500</button>
             </div>
         </div>
 
         <div id="page-earn" class="page">
-            <h2 style="color: var(--neon-purple)">משימות</h2>
+            <h2 id="title-earn" style="color: var(--neon-purple)">משימות</h2>
             <div class="card">
-                <div><b>הצטרף לערוץ</b><br><small>+5,000 זהב</small></div>
-                <button onclick="alert('עבר לערוץ!')" style="padding: 10px; background: var(--neon-purple); color: white; border: none; border-radius: 5px;">בצע</button>
+                <div><b id="task-name">הצטרף לערוץ</b><br><small>+10,000</small></div>
+                <button onclick="alert('Success!')" id="task-btn" style="padding: 10px; background: var(--neon-purple); color: white; border: none; border-radius: 8px;">GO</button>
             </div>
         </div>
 
         <div id="page-rank" class="page">
-            <h2 style="color: var(--neon-gold)">דירוג עולמי</h2>
-            <div class="card"><div>1. שחקן על</div><div>1,000,000</div></div>
-            <div class="card"><div>2. אתה</div><div id="your-rank">0</div></div>
+            <h2 id="title-rank" style="color: var(--neon-gold)">דירוג עולמי</h2>
+            <div class="card"><div>1. Elite Player</div><div style="color:var(--neon-gold)">2.5M</div></div>
+            <div class="card"><div id="rank-you">אתה</div><div id="your-rank">0</div></div>
         </div>
 
         <div class="nav">
-            <div class="nav-item active" onclick="showP('page-mine', this)">MINE</div>
-            <div class="nav-item" onclick="showP('page-shop', this)">SHOP</div>
-            <div class="nav-item" onclick="showP('page-earn', this)">EARN</div>
-            <div class="nav-item" onclick="showP('page-rank', this)">RANK</div>
+            <div class="nav-item active" onclick="showP('page-mine', this)" id="nav-mine">MINE</div>
+            <div class="nav-item" onclick="showP('page-shop', this)" id="nav-shop">SHOP</div>
+            <div class="nav-item" onclick="showP('page-earn', this)" id="nav-earn">EARN</div>
+            <div class="nav-item" onclick="showP('page-rank', this)" id="nav-rank">RANK</div>
         </div>
     </div>
 
     <script>
-        let score = 0;
-        let pps = 0;
+        let score = parseInt(localStorage.getItem('score')) || 0;
+        let pps = parseInt(localStorage.getItem('pps')) || 0;
+        let currentLang = 'he';
+
+        const langData = {
+            he: {
+                income: "רווח לשנייה", balance: "זהב", click: "לחץ על המטבע!",
+                shop: "חנות שדרוגים", earn: "משימות", rank: "דירוג עולמי",
+                buy: "קנה", task: "הצטרף לערוץ", you: "אתה", btn: "EN"
+            },
+            en: {
+                income: "Income /s", balance: "Balance", click: "Tap the Coin!",
+                shop: "Upgrade Shop", earn: "Tasks", rank: "Global Rank",
+                buy: "Buy", task: "Join Channel", you: "You", btn: "HE"
+            }
+        };
+
+        function toggleLang() {
+            currentLang = currentLang === 'he' ? 'en' : 'he';
+            document.body.dir = currentLang === 'he' ? 'rtl' : 'ltr';
+            document.getElementById('lang-btn').innerText = langData[currentLang].btn;
+            
+            // עדכון טקסטים
+            document.getElementById('label-income').innerText = langData[currentLang].income;
+            document.getElementById('label-balance').innerText = langData[currentLang].balance;
+            document.getElementById('click-msg').innerText = langData[currentLang].click;
+            document.getElementById('title-shop').innerText = langData[currentLang].shop;
+            document.getElementById('title-earn').innerText = langData[currentLang].earn;
+            document.getElementById('title-rank').innerText = langData[currentLang].rank;
+            document.getElementById('item-name').innerText = currentLang === 'he' ? "קליקר אוטומטי" : "Auto Clicker";
+            document.getElementById('task-name').innerText = currentLang === 'he' ? "הצטרף לערוץ" : "Join Channel";
+            document.getElementById('rank-you').innerText = langData[currentLang].you;
+            
+            updateUI();
+        }
+
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // פונקציית מעבר דפים - עכשיו היא פשוטה וחסינה
         function showP(pId, el) {
-            // הסתרת כל הדפים
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-            // הסרת עיצוב מהכפתורים
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
-            // הצגת הדף הנבחר
             document.getElementById(pId).classList.add('active-page');
             el.classList.add('active');
         }
@@ -117,36 +144,32 @@
             document.getElementById('balance-display').innerText = score.toLocaleString();
             document.getElementById('pps-display').innerText = "+" + pps;
             document.getElementById('your-rank').innerText = score.toLocaleString();
+            localStorage.setItem('score', score);
+            localStorage.setItem('pps', pps);
         }
 
         function buy(amt, cost) {
             if (score >= cost) {
                 score -= cost; pps += amt; updateUI();
-            } else { tg.showAlert("אין לך מספיק זהב!"); }
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            } else { tg.showAlert(currentLang === 'he' ? "חסר זהב!" : "Need more gold!"); }
         }
 
-        // לחיצה על המטבע
         document.getElementById('coin').addEventListener('touchstart', (e) => {
             e.preventDefault();
             score++;
             updateUI();
-            
-            // אפקט +1
             const plus = document.createElement('div');
             plus.className = 'plus-one'; plus.innerText = '+1';
             plus.style.left = e.touches[0].pageX + 'px';
             plus.style.top = e.touches[0].pageY + 'px';
             document.body.appendChild(plus);
             setTimeout(() => plus.remove(), 800);
-            
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
         });
 
-        // רווח אוטומטי
-        setInterval(() => {
-            if (pps > 0) { score += pps; updateUI(); }
-        }, 1000);
-
+        setInterval(() => { if (pps > 0) { score += pps; updateUI(); } }, 1000);
+        updateUI();
     </script>
 </body>
 </html>
