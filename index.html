@@ -3,79 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gold Clicker - Mobile Only</title>
+    <title>Gold Clicker Elite</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        :root {
+            --gold: #ffd700;
+            --gold-dark: #b8860b;
+            --bg-dark: #0a0a0a;
+        }
+
         body { 
-            background: #000; 
+            background: radial-gradient(circle at center, #1c1c1c 0%, #000 100%); 
             color: #fff; 
-            font-family: sans-serif; 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0; 
+            height: 100vh; 
+            width: 100vw;
             display: flex; 
             justify-content: center; 
             align-items: center; 
-            height: 100vh; 
             overflow: hidden; 
         }
 
-        /* מסך חסימה למחשב */
-        #desktop-blocker {
-            display: none; /* מוסתר כברירת מחדל */
+        /* מסך "Play on Mobile" - יוקרתי */
+        #mobile-only-overlay {
+            display: none;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
-            padding: 20px;
-            z-index: 9999;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+            width: 100%;
+            height: 100%;
+            padding: 40px;
+            box-sizing: border-box;
+            z-index: 10000;
         }
 
-        #desktop-blocker h1 { color: #ffd700; }
-        #desktop-blocker .icon { font-size: 80px; margin-bottom: 20px; }
-
-        /* הצגת החסימה רק במסכים רחבים (מחשב) */
-        @media style and (min-width: 769px) {
-            #desktop-blocker { display: block; }
-            #game-ui { display: none; }
+        .qr-placeholder {
+            width: 250px;
+            height: 250px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border-radius: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.2);
         }
 
-        /* עיצוב המשחק לנייד */
+        /* ממשק המשחק לנייד */
         #game-ui {
             width: 100%;
             max-width: 480px;
             height: 100vh;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             padding: 20px;
             box-sizing: border-box;
+            background: transparent;
         }
 
-        .score-val { font-size: 50px; font-weight: bold; color: #ffd700; text-align: center; margin-top: 30px; }
-        .coin-section { flex-grow: 1; display: flex; justify-content: center; align-items: center; }
-        #coin { width: 80%; max-width: 280px; aspect-ratio: 1/1; cursor: pointer; transition: transform 0.05s; }
-        #coin:active { transform: scale(0.92); }
-        .footer { padding-bottom: 30px; }
-        .bar-bg { width: 100%; height: 12px; background: #333; border-radius: 10px; overflow: hidden; margin-top: 10px; }
-        #energy-bar { height: 100%; width: 100%; background: orange; transition: width 0.2s; }
+        @media (min-width: 769px) {
+            #mobile-only-overlay { display: flex; }
+            #game-ui { display: none; }
+        }
+
+        .score-val { 
+            font-size: 60px; 
+            font-weight: 900; 
+            color: var(--gold); 
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .coin-section { 
+            flex-grow: 1; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            position: relative;
+        }
+
+        #coin { 
+            width: 280px; 
+            aspect-ratio: 1/1; 
+            cursor: pointer; 
+            transition: transform 0.05s ease; 
+            filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.3));
+            -webkit-tap-highlight-color: transparent;
+            z-index: 5;
+        }
+
+        #coin:active { transform: scale(0.9); }
+
+        /* אפקט הילה בלחיצה */
+        .ripple {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 215, 0, 0.4);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            animation: ripple-effect 0.4s ease-out;
+        }
+
+        @keyframes ripple-effect {
+            from { width: 0; height: 0; opacity: 1; }
+            to { width: 400px; height: 400px; opacity: 0; }
+        }
+
+        .floating-gold {
+            position: absolute;
+            color: var(--gold);
+            font-size: 35px;
+            font-weight: bold;
+            pointer-events: none;
+            animation: floatUp 0.7s ease-out forwards;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-150px) scale(1.2); }
+        }
+
+        .footer { padding-bottom: 50px; }
+        .bar-bg { width: 100%; height: 16px; background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid rgba(255,215,0,0.2); overflow: hidden; }
+        #energy-bar { height: 100%; width: 100%; background: linear-gradient(90deg, var(--gold-dark), var(--gold)); box-shadow: 0 0 15px var(--gold-dark); }
     </style>
 </head>
 <body>
 
-    <div id="desktop-blocker">
-        <div class="icon">📱</div>
-        <h1>המשחק זמין בנייד בלבד</h1>
-        <p>כדי לשחק ב-Gold Clicker, אנא פתח את הבוט דרך אפליקציית טלגרם בטלפון הנייד שלך.</p>
+    <div id="mobile-only-overlay">
+        <div class="qr-placeholder"><span style="font-size: 60px;">📱</span></div>
+        <h1 style="color: var(--gold); font-size: 32px; margin-bottom: 10px;">Play on Mobile</h1>
+        <p style="color: #888; font-size: 18px; line-height: 1.6;">לקבלת החוויה הטובה ביותר,<br>אנא פתח את המשחק דרך הטלפון הנייד.</p>
     </div>
 
     <div id="game-ui">
         <div class="score-val" id="score">0</div>
         
-        <div class="coin-section">
-            <img id="coin" src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Gold_coin_icon.png" alt="Coin">
+        <div class="coin-section" id="touch-area">
+            <img id="coin" src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Gold_coin_icon.png" alt="Gold Coin">
         </div>
 
         <div class="footer">
-            <div style="display: flex; justify-content: space-between; font-size: 14px;">
-                <span>⚡ Energy</span>
-                <span><span id="energy-text">1000</span>/1000</span>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: bold; color: var(--gold);">
+                <span>⚡ ENERGY</span>
+                <span><span id="energy-text">1000</span> / 1000</span>
             </div>
             <div class="bar-bg"><div id="energy-bar"></div></div>
         </div>
@@ -87,7 +165,7 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        function update() {
+        function updateUI() {
             document.getElementById('score').innerText = score.toLocaleString();
             document.getElementById('energy-text').innerText = energy;
             document.getElementById('energy-bar').style.width = (energy / 10) + "%";
@@ -95,16 +173,40 @@
             localStorage.setItem('energy', energy);
         }
 
-        document.getElementById('coin').addEventListener('touchstart', (e) => {
-            e.preventDefault();
+        function handleTap(x, y) {
             if (energy > 0) {
-                score++; energy--; update();
+                score++; energy--;
+                updateUI();
+                
+                // אפקט ויזואלי של הילה
+                const ripple = document.createElement('div');
+                ripple.className = 'ripple';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                document.body.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 400);
+
+                // מספר צף
+                const float = document.createElement('div');
+                float.className = 'floating-gold';
+                float.innerText = '+1';
+                float.style.left = (x - 20) + 'px';
+                float.style.top = (y - 50) + 'px';
+                document.body.appendChild(float);
+                setTimeout(() => float.remove(), 700);
+
                 if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
             }
+        }
+
+        document.getElementById('coin').addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            handleTap(touch.pageX, touch.pageY);
         });
 
-        setInterval(() => { if (energy < 1000) { energy++; update(); } }, 1500);
-        update();
+        setInterval(() => { if (energy < 1000) { energy++; updateUI(); } }, 1500);
+        updateUI();
     </script>
 </body>
 </html>
