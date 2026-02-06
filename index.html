@@ -3,27 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gold Clicker</title>
+    <title>Gold Clicker Elite</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { background: #000; color: #ffd700; font-family: sans-serif; text-align: center; margin: 0; overflow: hidden; touch-action: manipulation; }
-        .balance { font-size: 45px; font-weight: bold; margin-top: 40px; }
-        #coin { width: 220px; cursor: pointer; transition: transform 0.1s; margin-top: 20px; -webkit-tap-highlight-color: transparent; }
+        body { background: radial-gradient(circle, #1a1a1a 0%, #000 100%); color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; margin: 0; height: 100vh; display: flex; flexDirection: column; justify-content: space-around; overflow: hidden; user-select: none; }
+        .score-container { margin-top: 20px; }
+        .score-val { font-size: 55px; font-weight: 900; color: #ffd700; text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+        .coin-wrapper { position: relative; display: inline-block; }
+        #coin { width: 240px; filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.3)); cursor: pointer; transition: transform 0.05s; -webkit-tap-highlight-color: transparent; }
         #coin:active { transform: scale(0.92); }
-        .energy-box { width: 80%; height: 12px; background: #333; margin: 40px auto 10px; border-radius: 10px; }
-        #energy-bar { height: 100%; width: 100%; background: linear-gradient(90deg, #ffd700, #ff8c00); border-radius: 10px; transition: width 0.2s; }
+        .energy-box { width: 85%; margin: 0 auto; }
+        .bar-bg { width: 100%; height: 16px; background: #333; border-radius: 20px; border: 2px solid #444; overflow: hidden; }
+        #energy-bar { height: 100%; width: 100%; background: linear-gradient(90deg, #ff8c00, #ffd700); transition: width 0.2s; }
+        .floating-text { position: absolute; color: #ffd700; font-weight: bold; font-size: 24px; animation: floatUp 0.6s ease-out forwards; pointer-events: none; }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
     </style>
 </head>
 <body>
-    <div class="balance"><span id="score">0</span> GOLD</div>
-    <img id="coin" src="https://img.icons8.com/color/512/gold-coin.png" alt="Coin">
-    <div class="energy-box"><div id="energy-bar"></div></div>
-    <div>⚡ <span id="energy-text">1000</span> / 1000</div>
+    <div class="score-container">
+        <div class="score-val" id="score">0</div>
+        <div style="color: #ffd700; letter-spacing: 2px;">GOLD COINS</div>
+    </div>
+
+    <div class="coin-wrapper">
+        <img id="coin" src="https://www.pngall.com/wp-content/uploads/10/Gold-Coin-PNG-File.png" alt="Gold Coin">
+    </div>
+
+    <div class="energy-box">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-weight: bold;">
+            <span>🔋 Energy</span>
+            <span><span id="energy-text">1000</span>/1000</span>
+        </div>
+        <div class="bar-bg"><div id="energy-bar"></div></div>
+    </div>
 
     <script>
         let score = parseInt(localStorage.getItem('score')) || 0;
         let energy = parseInt(localStorage.getItem('energy')) || 1000;
-        
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
         function update() {
             document.getElementById('score').innerText = score.toLocaleString();
             document.getElementById('energy-text').innerText = energy;
@@ -32,19 +51,28 @@
             localStorage.setItem('energy', energy);
         }
 
+        function createFloatingText(x, y) {
+            const el = document.createElement('div');
+            el.className = 'floating-text';
+            el.innerText = '+1';
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 600);
+        }
+
         document.getElementById('coin').addEventListener('touchstart', (e) => {
             e.preventDefault();
             if (energy > 0) {
                 score++; energy--; update();
-                if (window.Telegram?.WebApp?.HapticFeedback) {
-                    window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-                }
+                const touch = e.touches[0];
+                createFloatingText(touch.pageX, touch.pageY);
+                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
             }
         });
 
         setInterval(() => { if (energy < 1000) { energy++; update(); } }, 1500);
         update();
-        window.Telegram.WebApp.expand();
     </script>
 </body>
 </html>
