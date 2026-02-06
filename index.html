@@ -3,117 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gold Clicker Mobile</title>
+    <title>Gold Clicker Mobile Only</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* עיצוב כללי שמתאים לנייד */
-        body { 
-            background: radial-gradient(circle, #1a1a1a 0%, #000 100%); 
-            color: #fff; 
-            font-family: system-ui, -apple-system, sans-serif; 
-            margin: 0; 
+        /* רקע שחור לכל המסך */
+        html, body {
+            background-color: #000;
+            margin: 0;
             padding: 0;
-            height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: space-between; 
-            overflow: hidden; 
-            user-select: none;
-            touch-action: manipulation;
-        }
-
-        .header { margin-top: 30px; text-align: center; }
-        .score-val { font-size: 50px; font-weight: bold; color: #ffd700; text-shadow: 0 0 20px rgba(255, 215, 0, 0.4); }
-        
-        /* המטבע במרכז המסך */
-        .coin-container {
+            height: 100vh;
             display: flex;
+            justify-content: center; /* ממרכז את "הטלפון" באמצע המסך */
             align-items: center;
-            justify-content: center;
-            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        /* המיכל שמתנהג כמו טלפון נייד */
+        .mobile-wrapper {
             width: 100%;
+            max-width: 480px; /* רוחב מקסימלי של טלפון */
+            height: 100vh;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5); /* צל קטן בצדדים ב-PC */
         }
 
-        #coin { 
-            width: 250px; /* גודל מושלם לנייד */
-            max-width: 70vw;
-            filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.3));
-            cursor: pointer; 
-            transition: transform 0.05s; 
-            -webkit-tap-highlight-color: transparent; 
+        .header {
+            text-align: center;
+            padding-top: 40px;
         }
 
-        #coin:active { transform: scale(0.9); }
-
-        .footer { 
-            width: 90%; 
-            padding-bottom: 40px; 
-            text-align: center; 
-        }
-
-        .bar-bg { 
-            width: 100%; 
-            height: 14px; 
-            background: #333; 
-            border-radius: 10px; 
-            margin: 10px 0; 
-            border: 1px solid #444;
-            overflow: hidden; 
-        }
-
-        #energy-bar { 
-            height: 100%; 
-            width: 100%; 
-            background: linear-gradient(90deg, #ff8c00, #ffd700); 
-            transition: width 0.2s; 
-        }
-
-        .floating-text {
-            position: absolute;
+        .score-val {
+            font-size: 50px;
+            font-weight: 900;
             color: #ffd700;
-            font-weight: bold;
-            font-size: 32px;
-            animation: floatUp 0.6s ease-out forwards;
-            pointer-events: none;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
         }
 
-        @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-120px); }
+        /* מרכוז המטבע */
+        .coin-section {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #coin {
+            width: 70%;
+            max-width: 280px;
+            aspect-ratio: 1/1; /* שומר על עיגול מושלם */
+            object-fit: contain;
+            cursor: pointer;
+            transition: transform 0.05s;
+            filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.2));
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #coin:active { transform: scale(0.92); }
+
+        .footer {
+            padding: 20px 30px 40px 30px;
+        }
+
+        .energy-stats {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .bar-bg {
+            width: 100%;
+            height: 12px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #444;
+        }
+
+        #energy-bar {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #ff8c00, #ffd700);
+            transition: width 0.2s;
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="score-val" id="score">0</div>
-        <div style="color: #ffd700; font-weight: bold; letter-spacing: 1px;">GOLD COINS</div>
-    </div>
-
-    <div class="coin-container">
-        <img id="coin" src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Gold_coin_icon.png" alt="Coin">
-    </div>
-
-    <div class="footer">
-        <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 5px;">
-            <span>🔋 Energy</span>
-            <span><span id="energy-text">1000</span>/1000</span>
+    <div class="mobile-wrapper">
+        <div class="header">
+            <div class="score-val" id="score">0</div>
+            <div style="color: #ffd700; font-weight: bold; letter-spacing: 2px;">GOLD</div>
         </div>
-        <div class="bar-bg">
-            <div id="energy-bar"></div>
+
+        <div class="coin-section">
+            <img id="coin" src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Gold_coin_icon.png" alt="Coin">
         </div>
-        <p style="font-size: 12px; color: #888;">Tap the coin to earn gold!</p>
+
+        <div class="footer">
+            <div class="energy-stats">
+                <span>⚡ Energy</span>
+                <span><span id="energy-text">1000</span> / 1000</span>
+            </div>
+            <div class="bar-bg">
+                <div id="energy-bar"></div>
+            </div>
+        </div>
     </div>
 
     <script>
         let score = parseInt(localStorage.getItem('score')) || 0;
         let energy = parseInt(localStorage.getItem('energy')) || 1000;
-        
         const tg = window.Telegram.WebApp;
-        tg.expand(); // פותח את המשחק על כל המסך בטלגרם
+        
+        tg.expand(); // פותח למסך מלא בטלגרם
 
-        function updateUI() {
+        function update() {
             document.getElementById('score').innerText = score.toLocaleString();
             document.getElementById('energy-text').innerText = energy;
             document.getElementById('energy-bar').style.width = (energy / 10) + "%";
@@ -121,40 +131,26 @@
             localStorage.setItem('energy', energy);
         }
 
-        function createFloatingText(x, y) {
-            const el = document.createElement('div');
-            el.className = 'floating-text';
-            el.innerText = '+1';
-            el.style.left = x + 'px';
-            el.style.top = y + 'px';
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 600);
-        }
-
-        // תמיכה בלחיצה בטלפון
+        // תמיכה בטאץ' לנייד
         document.getElementById('coin').addEventListener('touchstart', (e) => {
             e.preventDefault();
             if (energy > 0) {
                 score++;
                 energy--;
-                updateUI();
-                const touch = e.touches[0];
-                createFloatingText(touch.pageX - 20, touch.pageY - 40);
-                if (tg.HapticFeedback) {
-                    tg.HapticFeedback.impactOccurred('medium');
-                }
+                update();
+                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
             }
         });
 
-        // מילוי אנרגיה אוטומטי
+        // מילוי אנרגיה
         setInterval(() => {
             if (energy < 1000) {
                 energy++;
-                updateUI();
+                update();
             }
         }, 1500);
 
-        updateUI();
+        update();
     </script>
 </body>
 </html>
