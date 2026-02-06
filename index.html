@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gold Clicker Nova | Neon Shop</title>
+    <title>Gold Clicker Nova | Fixed Coin</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -23,6 +23,7 @@
             margin: 0; padding: 0;
             height: 100vh; width: 100vw;
             overflow: hidden;
+            touch-action: manipulation;
         }
 
         .neon-frame {
@@ -35,122 +36,95 @@
         }
 
         /* Pages */
-        .page { display: none; flex-direction: column; flex-grow: 1; padding: 20px; overflow-y: auto; animation: fadeIn 0.3s ease; }
+        .page { display: none; flex-direction: column; flex-grow: 1; padding: 20px; overflow-y: auto; }
         .active-page { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Stats Header */
-        .header { display: flex; justify-content: space-between; padding: 15px; gap: 15px; }
-        .stat-card { flex: 1; background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 12px; text-align: center; }
-        .stat-label { font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 5px; }
-        .stat-value { font-size: 18px; font-weight: 800; color: var(--neon-blue); }
+        .header { display: flex; justify-content: space-between; padding: 15px; gap: 10px; }
+        .stat-card { flex: 1; background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 10px; text-align: center; backdrop-filter: blur(10px); }
+        .stat-label { font-size: 10px; color: #888; text-transform: uppercase; }
+        .stat-value { font-size: 16px; font-weight: 800; color: var(--neon-blue); }
 
-        /* Shop Cards */
-        .shop-card {
-            background: var(--glass);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 15px;
-            margin-bottom: 12px;
+        /* Coin Styling - FIXED */
+        .game-area {
+            flex-grow: 1;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 15px;
-            transition: 0.2s;
-        }
-        .char-icon {
-            width: 55px; height: 55px;
-            background: #1a1a1a;
-            border-radius: 15px;
-            border: 2px solid var(--neon-blue);
-            display: flex; align-items: center; justify-content: center; font-size: 24px;
-        }
-        .buy-btn {
-            background: linear-gradient(45deg, var(--neon-purple), var(--neon-blue));
-            border: none; color: white; padding: 10px 15px; border-radius: 10px; font-weight: 900; font-size: 12px;
-            box-shadow: 0 0 10px rgba(188, 19, 254, 0.4);
+            justify-content: center;
+            position: relative;
         }
 
-        /* Game Area Elements */
-        .main-score { font-size: 60px; font-weight: 900; text-align: center; margin-bottom: 5px; background: linear-gradient(to bottom, #fff, var(--neon-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .coin-img { width: 220px; filter: drop-shadow(0 0 20px var(--neon-gold)); transition: transform 0.05s; z-index: 20; }
-        .coin-img:active { transform: scale(0.92); }
+        .coin-wrapper {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .coin-glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,172,9,0.2) 0%, transparent 70%);
+            z-index: 1;
+        }
+
+        .coin-btn {
+            width: 220px;
+            height: 220px;
+            z-index: 10;
+            cursor: pointer;
+            filter: drop-shadow(0 0 20px var(--neon-gold));
+            transition: transform 0.05s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .coin-btn:active { transform: scale(0.92); }
+
+        /* Score & UI */
+        .score-main { font-size: 60px; font-weight: 900; background: linear-gradient(to bottom, #fff, var(--neon-gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
         .floating-plus { position: absolute; color: var(--neon-gold); font-weight: 900; font-size: 32px; pointer-events: none; animation: floatAnim 0.8s forwards; text-shadow: 0 0 10px var(--neon-gold); z-index: 100; }
-        @keyframes floatAnim { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-130px); opacity: 0; } }
+        @keyframes floatAnim { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-140px); opacity: 0; } }
 
         /* Nav Bar */
-        .nav-bar {
-            position: fixed; bottom: 0; width: 100%; height: 75px;
-            background: rgba(11, 14, 20, 0.95); display: flex;
-            border-top: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(15px);
-        }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; font-size: 11px; font-weight: 800; }
-        .nav-item.active { color: var(--neon-blue); text-shadow: 0 0 8px var(--neon-blue); }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; height: 70px; background: rgba(11, 14, 20, 0.95); display: flex; border-top: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; font-size: 10px; font-weight: 800; }
+        .nav-item.active { color: var(--neon-blue); }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
     <div class="neon-frame">
         <div class="header">
-            <div class="stat-card">
-                <div class="stat-label">Income</div>
-                <div class="stat-value" id="pps-val">+0/s</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Total Gold</div>
-                <div class="stat-value" style="color: var(--neon-gold);" id="total-val">0</div>
-            </div>
+            <div class="stat-card"><div class="stat-label">Income</div><div class="stat-value" id="pps-val">+0/s</div></div>
+            <div class="stat-card"><div class="stat-label">Balance</div><div class="stat-value" id="total-val" style="color:var(--neon-gold)">0</div></div>
         </div>
 
-        <div id="page-mine" class="page active-page" style="align-items: center; justify-content: center;">
-            <div class="main-score" id="score-val">0</div>
-            <div style="position: relative; height: 300px; display: flex; align-items: center;" id="coin-area">
-                <img id="coin-btn" class="coin-img" src="https://www.freeiconspng.com/uploads/gold-coin-png-10.png">
-            </div>
-            <div style="width: 85%; margin-top: 20px;">
-                <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:5px; font-weight: 800;">
-                    <span style="color:var(--neon-blue)">ENERGY</span>
-                    <span id="energy-num">1000/1000</span>
+        <div id="p-mine" class="page active-page">
+            <div class="game-area">
+                <div class="score-main" id="score-val">0</div>
+                <div class="coin-wrapper" id="coin-container">
+                    <div class="coin-glow"></div>
+                    <img id="coin-img" class="coin-btn" src="https://img.icons8.com/emoji/256/gold-coin-emoji.png" onerror="this.src='https://static.vecteezy.com/system/resources/previews/009/393/293/original/gold-coin-clipart-design-illustration-free-png.png'">
                 </div>
-                <div style="height:8px; background:#111; border-radius:10px; border:1px solid #333; overflow:hidden;">
-                    <div id="energy-bar-fill" style="height:100%; width:100%; background:linear-gradient(90deg, var(--neon-blue), var(--neon-purple)); transition: 0.2s;"></div>
+                
+                <div style="width: 80%; margin-top: 40px;">
+                    <div style="display:flex; justify-content:space-between; font-size:10px; margin-bottom:5px; font-weight:800;">
+                        <span style="color:var(--neon-blue)">ENERGY</span><span id="energy-num">1000/1000</span>
+                    </div>
+                    <div style="height:8px; background:#111; border-radius:10px; border:1px solid #333; overflow:hidden;">
+                        <div id="energy-bar" style="height:100%; width:100%; background:linear-gradient(90deg, var(--neon-blue), var(--neon-purple));"></div>
+                    </div>
                 </div>
-            </div>
-        </div>
-
-        <div id="page-shop" class="page">
-            <h2 style="color: var(--neon-blue); font-weight: 900; margin-bottom: 20px;">MINING SQUAD</h2>
-            
-            <div class="shop-card">
-                <div class="char-icon">👨‍💻</div>
-                <div style="flex-grow: 1;">
-                    <div style="font-weight: 800;">Cyber Clicker</div>
-                    <div style="font-size: 11px; color: var(--neon-purple);">+2 Gold/sec</div>
-                </div>
-                <button class="buy-btn" onclick="buyChar(2, 500)">500</button>
-            </div>
-
-            <div class="shop-card">
-                <div class="char-icon">🤖</div>
-                <div style="flex-grow: 1;">
-                    <div style="font-weight: 800;">Gold Droid</div>
-                    <div style="font-size: 11px; color: var(--neon-purple);">+15 Gold/sec</div>
-                </div>
-                <button class="buy-btn" onclick="buyChar(15, 4000)">4,000</button>
-            </div>
-
-            <div class="shop-card">
-                <div class="char-icon">👑</div>
-                <div style="flex-grow: 1;">
-                    <div style="font-weight: 800;">Mining Tycoon</div>
-                    <div style="font-size: 11px; color: var(--neon-purple);">+100 Gold/sec</div>
-                </div>
-                <button class="buy-btn" onclick="buyChar(100, 25000)">25,000</button>
             </div>
         </div>
 
         <div class="nav-bar">
-            <div class="nav-item active" onclick="switchPage('page-mine', this)"><span>MINE</span></div>
-            <div class="nav-item" onclick="switchPage('page-shop', this)"><span>SHOP</span></div>
+            <div class="nav-item active"><span>MINE</span></div>
+            <div class="nav-item"><span>SHOP</span></div>
             <div class="nav-item"><span>EARN</span></div>
             <div class="nav-item"><span>RANK</span></div>
         </div>
@@ -158,40 +132,21 @@
 
     <script>
         let score = parseInt(localStorage.getItem('score')) || 0;
-        let pps = parseInt(localStorage.getItem('pps')) || 0;
         let energy = 1000;
+        let pps = parseInt(localStorage.getItem('pps')) || 0;
         const tg = window.Telegram.WebApp;
         tg.expand();
-
-        function switchPage(pageId, navEl) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active-page');
-            navEl.classList.add('active');
-        }
 
         function updateUI() {
             document.getElementById('score-val').innerText = Math.floor(score).toLocaleString();
             document.getElementById('total-val').innerText = Math.floor(score).toLocaleString();
             document.getElementById('pps-val').innerText = "+" + pps + "/s";
             document.getElementById('energy-num').innerText = energy + "/1000";
-            document.getElementById('energy-bar-fill').style.width = (energy / 10) + "%";
+            document.getElementById('energy-bar').style.width = (energy / 10) + "%";
             localStorage.setItem('score', score);
-            localStorage.setItem('pps', pps);
         }
 
-        function buyChar(amount, cost) {
-            if (score >= cost) {
-                score -= cost;
-                pps += amount;
-                updateUI();
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            } else {
-                tg.showAlert("Not enough gold, keep clicking!");
-            }
-        }
-
-        document.getElementById('coin-btn').addEventListener('touchstart', (e) => {
+        document.getElementById('coin-img').addEventListener('touchstart', (e) => {
             e.preventDefault();
             if (energy > 0) {
                 score++; energy--;
@@ -199,7 +154,7 @@
                 const p = document.createElement('div');
                 p.className = 'floating-plus'; p.innerText = '+1';
                 p.style.left = t.pageX - 15 + 'px'; p.style.top = t.pageY - 60 + 'px';
-                document.getElementById('coin-area').appendChild(p);
+                document.getElementById('coin-container').appendChild(p);
                 setTimeout(() => p.remove(), 800);
                 updateUI();
                 if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
