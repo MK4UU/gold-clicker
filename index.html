@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -25,11 +25,12 @@
             overflow: hidden; 
         }
 
-        /* מסך "Play on Mobile" - יוקרתי */
+        /* Desktop Landing Page - Play on Mobile */
         #mobile-only-overlay {
             display: none;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             text-align: center;
             background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
             width: 100%;
@@ -40,18 +41,34 @@
         }
 
         .qr-placeholder {
-            width: 250px;
-            height: 250px;
+            width: 220px;
+            height: 220px;
             background: linear-gradient(135deg, var(--gold), var(--gold-dark));
-            border-radius: 20px;
+            border-radius: 30px;
             margin-bottom: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 50px rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.2);
         }
 
-        /* ממשק המשחק לנייד */
+        .desktop-title {
+            color: var(--gold);
+            font-size: 42px;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .desktop-text {
+            color: #ccc;
+            font-size: 18px;
+            max-width: 400px;
+            line-height: 1.5;
+        }
+
+        /* Game UI */
         #game-ui {
             width: 100%;
             max-width: 480px;
@@ -69,13 +86,24 @@
             #game-ui { display: none; }
         }
 
+        .score-container {
+            margin-top: 50px;
+            text-align: center;
+        }
+
         .score-val { 
-            font-size: 60px; 
+            font-size: 65px; 
             font-weight: 900; 
             color: var(--gold); 
             text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
-            margin-top: 40px;
-            text-align: center;
+        }
+
+        .score-label {
+            color: var(--gold);
+            font-weight: bold;
+            letter-spacing: 4px;
+            font-size: 14px;
+            opacity: 0.8;
         }
 
         .coin-section { 
@@ -87,72 +115,104 @@
         }
 
         #coin { 
-            width: 280px; 
+            width: 80%; 
+            max-width: 280px; 
             aspect-ratio: 1/1; 
             cursor: pointer; 
-            transition: transform 0.05s ease; 
+            transition: transform 0.05s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.3));
             -webkit-tap-highlight-color: transparent;
             z-index: 5;
         }
 
-        #coin:active { transform: scale(0.9); }
+        #coin:active { transform: scale(0.92); }
 
-        /* אפקט הילה בלחיצה */
+        /* Ripple Effect */
         .ripple {
             position: absolute;
-            width: 100px;
-            height: 100px;
-            background: rgba(255, 215, 0, 0.4);
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 215, 0, 0.5);
             border-radius: 50%;
             transform: translate(-50%, -50%);
             pointer-events: none;
-            animation: ripple-effect 0.4s ease-out;
+            animation: ripple-effect 0.5s ease-out forwards;
         }
 
         @keyframes ripple-effect {
             from { width: 0; height: 0; opacity: 1; }
-            to { width: 400px; height: 400px; opacity: 0; }
+            to { width: 500px; height: 500px; opacity: 0; }
         }
 
         .floating-gold {
             position: absolute;
             color: var(--gold);
-            font-size: 35px;
-            font-weight: bold;
+            font-size: 38px;
+            font-weight: 900;
             pointer-events: none;
-            animation: floatUp 0.7s ease-out forwards;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            animation: floatUp 0.8s ease-out forwards;
         }
 
         @keyframes floatUp {
             0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-150px) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-160px) scale(1.3); }
         }
 
-        .footer { padding-bottom: 50px; }
-        .bar-bg { width: 100%; height: 16px; background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid rgba(255,215,0,0.2); overflow: hidden; }
-        #energy-bar { height: 100%; width: 100%; background: linear-gradient(90deg, var(--gold-dark), var(--gold)); box-shadow: 0 0 15px var(--gold-dark); }
+        .footer { padding-bottom: 40px; padding-left: 20px; padding-right: 20px; }
+        
+        .energy-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 900;
+            color: var(--gold);
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .bar-bg { 
+            width: 100%; 
+            height: 16px; 
+            background: rgba(255,255,255,0.05); 
+            border-radius: 20px; 
+            border: 1px solid rgba(255,215,0,0.2); 
+            overflow: hidden; 
+        }
+
+        #energy-bar { 
+            height: 100%; 
+            width: 100%; 
+            background: linear-gradient(90deg, var(--gold-dark), var(--gold)); 
+            box-shadow: 0 0 15px var(--gold-dark);
+            transition: width 0.15s linear;
+        }
     </style>
 </head>
 <body>
 
     <div id="mobile-only-overlay">
-        <div class="qr-placeholder"><span style="font-size: 60px;">📱</span></div>
-        <h1 style="color: var(--gold); font-size: 32px; margin-bottom: 10px;">Play on Mobile</h1>
-        <p style="color: #888; font-size: 18px; line-height: 1.6;">לקבלת החוויה הטובה ביותר,<br>אנא פתח את המשחק דרך הטלפון הנייד.</p>
+        <div class="qr-placeholder">
+            <span style="font-size: 80px;">📱</span>
+        </div>
+        <h1 class="desktop-title">Play on Mobile</h1>
+        <p class="desktop-text">
+            To enjoy the full experience and start earning gold, please open this bot on your mobile device.
+        </p>
     </div>
 
     <div id="game-ui">
-        <div class="score-val" id="score">0</div>
+        <div class="score-container">
+            <div class="score-val" id="score">0</div>
+            <div class="score-label">GOLD COINS</div>
+        </div>
         
-        <div class="coin-section" id="touch-area">
+        <div class="coin-section">
             <img id="coin" src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Gold_coin_icon.png" alt="Gold Coin">
         </div>
 
         <div class="footer">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: bold; color: var(--gold);">
-                <span>⚡ ENERGY</span>
+            <div class="energy-stats">
+                <span>⚡ Energy</span>
                 <span><span id="energy-text">1000</span> / 1000</span>
             </div>
             <div class="bar-bg"><div id="energy-bar"></div></div>
@@ -163,6 +223,7 @@
         let score = parseInt(localStorage.getItem('score')) || 0;
         let energy = parseInt(localStorage.getItem('energy')) || 1000;
         const tg = window.Telegram.WebApp;
+        
         tg.expand();
 
         function updateUI() {
@@ -173,39 +234,45 @@
             localStorage.setItem('energy', energy);
         }
 
-        function handleTap(x, y) {
-            if (energy > 0) {
-                score++; energy--;
-                updateUI();
-                
-                // אפקט ויזואלי של הילה
-                const ripple = document.createElement('div');
-                ripple.className = 'ripple';
-                ripple.style.left = x + 'px';
-                ripple.style.top = y + 'px';
-                document.body.appendChild(ripple);
-                setTimeout(() => ripple.remove(), 400);
+        function createEffects(x, y) {
+            // Ripple
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 500);
 
-                // מספר צף
-                const float = document.createElement('div');
-                float.className = 'floating-gold';
-                float.innerText = '+1';
-                float.style.left = (x - 20) + 'px';
-                float.style.top = (y - 50) + 'px';
-                document.body.appendChild(float);
-                setTimeout(() => float.remove(), 700);
-
-                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-            }
+            // Floating +1
+            const float = document.createElement('div');
+            float.className = 'floating-gold';
+            float.innerText = '+1';
+            float.style.left = (x - 20) + 'px';
+            float.style.top = (y - 60) + 'px';
+            document.body.appendChild(float);
+            setTimeout(() => float.remove(), 800);
         }
 
         document.getElementById('coin').addEventListener('touchstart', (e) => {
             e.preventDefault();
-            const touch = e.touches[0];
-            handleTap(touch.pageX, touch.pageY);
+            if (energy > 0) {
+                score++;
+                energy--;
+                updateUI();
+                const touch = e.touches[0];
+                createEffects(touch.pageX, touch.pageY);
+                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+            }
         });
 
-        setInterval(() => { if (energy < 1000) { energy++; updateUI(); } }, 1500);
+        // Fast energy recovery for better UX
+        setInterval(() => {
+            if (energy < 1000) {
+                energy++;
+                updateUI();
+            }
+        }, 1200);
+
         updateUI();
     </script>
 </body>
