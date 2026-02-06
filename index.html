@@ -3,191 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gold Clicker Elite | International Edition</title>
+    <title>Gold Clicker Elite | Global</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --gold: #ffd700;
-            --gold-gradient: linear-gradient(135deg, #ffd700 0%, #b8860b 100%);
-            --glass: rgba(255, 255, 255, 0.05);
-        }
+        :root { --gold: #ffd700; --gold-grad: linear-gradient(135deg, #ffd700 0%, #b8860b 100%); }
+        body { background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; height: 100vh; overflow: hidden; }
+        
+        /* Desktop Blocker */
+        #desktop-overlay { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); position: fixed; width: 100%; z-index: 9999; }
+        @media (min-width: 769px) { #desktop-overlay { display: flex; } }
 
-        body { 
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); 
-            color: #fff; 
-            font-family: 'Inter', sans-serif;
-            margin: 0; 
-            height: 100vh; 
-            width: 100vw;
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            overflow: hidden; 
-            user-select: none;
-        }
+        /* Main Layout */
+        #app { height: 100vh; display: flex; flex-direction: column; max-width: 480px; margin: 0 auto; background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); }
+        .page { display: none; flex-direction: column; height: 100%; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+        .active { display: flex; }
 
-        /* Luxury Desktop Blocker */
-        #desktop-overlay {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            background: #000;
-            width: 100%;
-            height: 100%;
-            position: fixed;
-            z-index: 10000;
-            padding: 40px;
-        }
+        /* UI Elements */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; }
+        .wallet-btn { background: var(--gold-grad); color: #000; border: none; padding: 8px 15px; border-radius: 20px; font-weight: 800; font-size: 11px; }
+        
+        .score-section { text-align: center; margin: 20px 0; }
+        .score-val { font-size: 55px; font-weight: 900; color: var(--gold); text-shadow: 0 0 20px rgba(255,215,0,0.3); }
+        
+        .coin-wrap { flex-grow: 1; display: flex; justify-content: center; align-items: center; position: relative; }
+        #coin { width: 250px; cursor: pointer; transition: transform 0.05s; filter: drop-shadow(0 0 30px rgba(255,215,0,0.2)); -webkit-tap-highlight-color: transparent; }
+        #coin:active { transform: scale(0.92); }
 
-        .luxury-card {
-            background: var(--glass);
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            padding: 50px;
-            border-radius: 40px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 100px rgba(0,0,0,0.5);
-        }
+        /* Nav Bar */
+        .nav-bar { display: flex; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 15px 0; border-top: 1px solid rgba(255,215,0,0.1); }
+        .nav-item { flex: 1; text-align: center; color: #888; font-size: 12px; font-weight: bold; cursor: pointer; }
+        .nav-item.active-nav { color: var(--gold); }
 
-        .device-icon {
-            font-size: 80px;
-            background: var(--gold-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-        }
-
-        .desktop-title { font-size: 40px; font-weight: 900; margin-bottom: 15px; letter-spacing: -1px; }
-        .desktop-desc { color: #888; font-size: 18px; max-width: 400px; line-height: 1.6; }
-
-        @media (min-width: 769px) {
-            #desktop-overlay { display: flex; }
-            #game-ui { display: none; }
-        }
-
-        /* Mobile Game Interface */
-        #game-ui {
-            width: 100%;
-            max-width: 480px;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .header-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 5px; }
-        .wallet-btn { 
-            background: var(--gold-gradient); 
-            color: #000; font-weight: 800; border: none; padding: 10px 20px; 
-            border-radius: 30px; font-size: 11px; cursor: pointer;
-            text-transform: uppercase; box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
-        }
-
-        .stats-box { text-align: center; margin-top: 20px; }
-        .league-name { color: var(--gold); font-weight: 700; font-size: 12px; letter-spacing: 3px; margin-bottom: 5px; opacity: 0.8; }
-        .score-val { font-size: 70px; font-weight: 900; color: var(--gold); text-shadow: 0 0 30px rgba(255, 215, 0, 0.4); }
-
-        .coin-box { flex-grow: 1; display: flex; justify-content: center; align-items: center; position: relative; }
-        #coin { 
-            width: 280px; aspect-ratio: 1/1; cursor: pointer; 
-            transition: transform 0.05s cubic-bezier(0.1, 0.5, 0.1, 1);
-            filter: drop-shadow(0 0 50px rgba(255, 215, 0, 0.2));
-            -webkit-tap-highlight-color: transparent;
-        }
-        #coin:active { transform: scale(0.9); }
-
-        .footer { padding-bottom: 50px; padding-left: 10px; padding-right: 10px; }
-        .energy-label { display: flex; justify-content: space-between; font-weight: 800; color: var(--gold); font-size: 12px; margin-bottom: 8px; }
-        .bar-container { width: 100%; height: 16px; background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid rgba(255,215,0,0.15); overflow: hidden; }
-        #energy-fill { height: 100%; width: 100%; background: var(--gold-gradient); transition: width 0.2s linear; }
-
-        /* Animated Effects */
-        .tap-number { position: absolute; color: var(--gold); font-size: 35px; font-weight: 900; pointer-events: none; animation: rise 0.7s ease-out forwards; }
-        @keyframes rise { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-160px) scale(1.2); } }
+        /* List Items (Tasks/Friends) */
+        .card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,215,0,0.1); }
+        .claim-btn { background: var(--gold-grad); color: #000; border: none; padding: 8px 15px; border-radius: 10px; font-weight: bold; font-size: 12px; }
+        
+        .tap-msg { position: absolute; color: var(--gold); font-size: 30px; font-weight: 900; pointer-events: none; animation: floatUp 0.7s forwards; }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-120px); } }
     </style>
 </head>
 <body>
 
     <div id="desktop-overlay">
-        <div class="luxury-card">
-            <div class="device-icon">📱</div>
-            <h1 class="desktop-title">MOBILE ACCESS ONLY</h1>
-            <p class="desktop-desc">This is a premium mobile-only experience. Please open this link in your Telegram mobile app to join the Elite League.</p>
-        </div>
+        <h1 style="color:var(--gold)">MOBILE ONLY</h1>
+        <p>Join the Elite League on your smartphone.</p>
     </div>
 
-    <div id="game-ui">
-        <div class="header-bar">
-            <div style="font-weight: 900; color: var(--gold); font-size: 14px; letter-spacing: 1px;">ELITE CLUB</div>
-            <button class="wallet-btn" onclick="alert('Wallet Integration coming soon')">Connect Wallet</button>
-        </div>
-
-        <div class="stats-box">
-            <div class="league-name" id="league">BRONZE LEAGUE</div>
-            <div class="score-val" id="score">0</div>
-            <div style="font-size: 10px; color: #666; font-weight: 700; letter-spacing: 5px;">GOLD COINS</div>
-        </div>
-
-        <div class="coin-box">
-            <img id="coin" src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Gold_coin_icon.png" alt="Coin">
-        </div>
-
-        <div class="footer">
-            <div class="energy-label">
-                <span>⚡ ENERGY</span>
-                <span><span id="energy-text">1000</span> / 1000</span>
+    <div id="app">
+        <div id="game-page" class="page active">
+            <div class="header">
+                <div style="font-weight:900; color:var(--gold)">ELITE v1.2</div>
+                <button class="wallet-btn">CONNECT WALLET</button>
             </div>
-            <div class="bar-container">
-                <div id="energy-fill"></div>
+            <div class="score-section">
+                <div id="league-name" style="font-size:12px; color:var(--gold); letter-spacing:2px">BRONZE LEAGUE</div>
+                <div class="score-val" id="score">0</div>
             </div>
+            <div class="coin-wrap"><img id="coin" src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Gold_coin_icon.png"></div>
+            <div class="footer" style="padding-bottom:20px">
+                <div style="display:flex; justify-content:space-between; color:var(--gold); font-size:12px; font-weight:900">
+                    <span>⚡ ENERGY</span>
+                    <span><span id="energy-text">1000</span>/1000</span>
+                </div>
+                <div style="width:100%; height:12px; background:#222; border-radius:10px; margin-top:5px; overflow:hidden">
+                    <div id="energy-bar" style="height:100%; width:100%; background:var(--gold-grad)"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tasks-page" class="page">
+            <h1 style="color:var(--gold)">TASKS</h1>
+            <div class="card">
+                <div><b>Join Telegram</b><br><small>+5,000 Gold</small></div>
+                <button class="claim-btn" onclick="claimTask(5000, this)">Claim</button>
+            </div>
+            <div class="card">
+                <div><b>Follow X (Twitter)</b><br><small>+3,000 Gold</small></div>
+                <button class="claim-btn" onclick="claimTask(3000, this)">Claim</button>
+            </div>
+        </div>
+
+        <div id="friends-page" class="page">
+            <h1 style="color:var(--gold)">FRIENDS</h1>
+            <p style="color:#888">Invite friends and get 10% of their earnings!</p>
+            <button class="claim-btn" style="width:100%; padding:15px; margin-top:20px" onclick="alert('Link Copied!')">Copy Referral Link</button>
+        </div>
+
+        <div id="shop-page" class="page">
+            <h1 style="color:var(--gold)">SHOP</h1>
+            <div class="card">
+                <div><b>Auto-Tap Bot</b><br><small>Earns 1/sec automatically</small></div>
+                <button id="buy-bot" class="claim-btn" onclick="buyBot()">Buy: 50,000</button>
+            </div>
+        </div>
+
+        <div class="nav-bar">
+            <div class="nav-item active-nav" onclick="showPage('game-page', this)">🎮 Game</div>
+            <div class="nav-item" onclick="showPage('tasks-page', this)">✅ Tasks</div>
+            <div class="nav-item" onclick="showPage('friends-page', this)">👥 Friends</div>
+            <div class="nav-item" onclick="showPage('shop-page', this)">💰 Shop</div>
         </div>
     </div>
 
     <script>
         let score = parseInt(localStorage.getItem('score')) || 0;
         let energy = parseInt(localStorage.getItem('energy')) || 1000;
+        let hasBot = localStorage.getItem('hasBot') === 'true';
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        function getLeague(s) {
-            if (s < 5000) return "BRONZE LEAGUE";
-            if (s < 25000) return "SILVER LEAGUE";
-            if (s < 100000) return "GOLD LEAGUE";
-            return "DIAMOND LEAGUE";
+        function showPage(pageId, navEl) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
+            document.getElementById(pageId).classList.add('active');
+            navEl.classList.add('active-nav');
         }
 
         function updateUI() {
             document.getElementById('score').innerText = score.toLocaleString();
             document.getElementById('energy-text').innerText = energy;
-            document.getElementById('energy-fill').style.width = (energy / 10) + "%";
-            document.getElementById('league').innerText = getLeague(score);
+            document.getElementById('energy-bar').style.width = (energy/10) + "%";
+            if(hasBot) document.getElementById('buy-bot').innerText = "OWNED";
             localStorage.setItem('score', score);
             localStorage.setItem('energy', energy);
         }
 
+        function claimTask(reward, btn) {
+            score += reward; updateUI();
+            btn.disabled = true; btn.innerText = "DONE"; btn.style.opacity = "0.5";
+        }
+
+        function buyBot() {
+            if(!hasBot && score >= 50000) {
+                score -= 50000; hasBot = true;
+                localStorage.setItem('hasBot', 'true'); updateUI();
+            }
+        }
+
         document.getElementById('coin').addEventListener('touchstart', (e) => {
             e.preventDefault();
-            if (energy > 0) {
-                score++;
-                energy--;
-                updateUI();
-                const touch = e.touches[0];
-                const num = document.createElement('div');
-                num.className = 'tap-number';
-                num.innerText = '+1';
-                num.style.left = touch.pageX + 'px';
-                num.style.top = touch.pageY + 'px';
-                document.body.appendChild(num);
-                setTimeout(() => num.remove(), 700);
-                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+            if(energy > 0) {
+                score++; energy--; updateUI();
+                const t = e.touches[0];
+                const m = document.createElement('div');
+                m.className = 'tap-msg'; m.innerText = '+1';
+                m.style.left = t.pageX + 'px'; m.style.top = t.pageY + 'px';
+                document.body.appendChild(m);
+                setTimeout(() => m.remove(), 700);
+                if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
             }
         });
 
-        setInterval(() => { if (energy < 1000) { energy++; updateUI(); } }, 1500);
+        setInterval(() => { if(energy < 1000) { energy++; updateUI(); } }, 1500);
+        setInterval(() => { if(hasBot) { score += 1; updateUI(); } }, 1000);
         updateUI();
     </script>
 </body>
