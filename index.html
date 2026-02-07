@@ -3,159 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EGC Network</title>
+    <title>EGC Network | Functional</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --bg: #080a0f; 
-            --card-bg: #12161f;
-            --egc-gold: #ffac09; 
-            --egc-orange: #f35626;
-            --blue: #007aff;
+            --bg: #080a0f; --card-bg: #12161f;
+            --egc-gold: #ffac09; --egc-orange: #f35626; --blue: #007aff;
         }
-        
-        body, html { 
-            background: var(--bg); 
-            color: #fff; font-family: 'Inter', sans-serif; 
-            margin: 0; padding: 0; height: 100vh; overflow: hidden; 
-        }
-
+        body, html { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 0; height: 100vh; overflow: hidden; }
         .app-container { height: 100vh; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; }
 
+        /* Pages System */
+        .page { display: none; flex-direction: column; flex-grow: 1; animation: fadeIn 0.3s ease; }
+        .active-page { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
         /* Header */
-        .header { text-align: center; margin-bottom: 25px; }
-        .main-balance { font-size: 48px; font-weight: 900; color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .main-balance span { font-size: 18px; color: var(--egc-gold); letter-spacing: 1px; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .main-balance { font-size: 42px; font-weight: 900; color: #fff; }
+        .main-balance span { font-size: 16px; color: var(--egc-gold); }
 
-        /* Farming Card Custom */
-        .egc-card { 
-            background: var(--card-bg); 
-            border-radius: 28px; 
-            padding: 25px; 
-            border: 1px solid rgba(255,172,9,0.1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .card-row { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; }
-        .label { font-size: 12px; color: #888; text-transform: uppercase; }
-        .value { font-size: 14px; font-weight: bold; color: #fff; }
+        /* EGC Card */
+        .egc-card { background: var(--card-bg); border-radius: 24px; padding: 20px; border: 1px solid rgba(255,172,9,0.1); }
+        .card-row { display: flex; justify-content: space-between; margin-bottom: 12px; }
+        .label { font-size: 11px; color: #888; text-transform: uppercase; }
+        .value { font-size: 13px; font-weight: bold; }
 
-        /* Mining Progress Bar */
-        .progress-container { margin: 20px 0; }
-        .bar-bg { height: 8px; background: #1c222d; border-radius: 10px; overflow: hidden; }
-        .bar-fill { height: 100%; width: 65%; background: linear-gradient(90deg, var(--egc-orange), var(--egc-gold)); box-shadow: 0 0 10px var(--egc-orange); }
+        /* Progress Bar */
+        .bar-bg { height: 6px; background: #1c222d; border-radius: 10px; margin-top: 5px; overflow: hidden; }
+        .bar-fill { height: 100%; background: linear-gradient(90deg, var(--egc-orange), var(--egc-gold)); transition: width 0.3s; }
 
-        /* Buttons */
+        /* Boost Button */
         .btn-boost { 
-            width: 100%; padding: 18px; border-radius: 16px; border: none; 
-            background: var(--blue); color: white; font-weight: 800; font-size: 16px;
-            cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
+            width: 100%; padding: 16px; border-radius: 14px; border: none; 
+            background: var(--blue); color: white; font-weight: 800; font-size: 15px;
+            margin-top: 15px; cursor: pointer; transition: 0.2s;
         }
-        .btn-boost:active { transform: scale(0.97); }
+        .btn-boost:disabled { background: #2c2c2e; color: #555; cursor: not-allowed; }
 
-        /* Custom EGC Coin Design */
-        .coin-wrap { flex-grow: 1; display: flex; align-items: center; justify-content: center; }
+        /* Coin Area */
+        .coin-wrap { flex-grow: 1; display: flex; align-items: center; justify-content: center; position: relative; }
         .egc-coin { 
-            width: 200px; height: 200px; 
-            background: linear-gradient(135deg, #ffac09 0%, #f35626 100%);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 50px; font-weight: 900; color: #fff;
-            box-shadow: 0 0 50px rgba(243, 86, 38, 0.4), inset 0 0 20px rgba(255,255,255,0.3);
-            border: 8px solid rgba(255,255,255,0.1);
-            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
+            width: 180px; height: 180px; background: linear-gradient(135deg, #ffac09, #f35626);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 44px; font-weight: 900; box-shadow: 0 0 30px rgba(243, 86, 38, 0.2);
+            transition: transform 0.05s; user-select: none; -webkit-tap-highlight-color: transparent;
         }
-        .egc-coin:active { transform: scale(0.92); }
+        .egc-coin.boosting { animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 20px var(--egc-gold); } 50% { box-shadow: 0 0 60px var(--egc-orange); } 100% { box-shadow: 0 0 20px var(--egc-gold); } }
 
-        /* Bottom Nav */
-        .nav { 
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 80px; 
-            background: #0d1117; display: flex; justify-content: space-around; align-items: center;
-            border-top: 1px solid #1c222d;
-        }
-        .nav-item { text-align: center; color: #555; font-size: 10px; font-weight: bold; }
+        /* Navigation */
+        .nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #0d1117; display: flex; border-top: 1px solid #1c222d; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; font-size: 10px; font-weight: bold; cursor: pointer; }
         .nav-item.active { color: var(--egc-gold); }
-        .nav-icon { font-size: 22px; margin-bottom: 4px; }
+        .nav-icon { font-size: 20px; margin-bottom: 2px; }
 
-        .plus-egc { position: absolute; color: var(--egc-gold); font-weight: 900; font-size: 28px; animation: fly 0.7s forwards; pointer-events: none; }
-        @keyframes fly { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-130px); opacity: 0; } }
+        .plus-egc { position: absolute; color: var(--egc-gold); font-weight: 900; font-size: 26px; animation: fly 0.7s forwards; pointer-events: none; }
+        @keyframes fly { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-120px); opacity: 0; } }
     </style>
 </head>
 <body>
 
     <div class="app-container">
+        
         <div class="header">
-            <div style="font-size: 12px; color: #888; margin-bottom: 5px;">TOTAL BALANCE</div>
+            <div style="font-size: 11px; color: #888;">TOTAL EGC</div>
             <div class="main-balance" id="balance">0 <span>EGC</span></div>
         </div>
 
-        <div class="egc-card">
-            <div class="card-row">
-                <div>
-                    <div class="label">Mining Rate</div>
-                    <div class="value" style="color: #4cd964;">+25.5 EGC/hr</div>
+        <div id="page-home" class="page active-page">
+            <div class="egc-card">
+                <div class="card-row">
+                    <div><div class="label">Mining Rate</div><div id="rate-text" class="value" style="color: #4cd964;">+25 EGC/hr</div></div>
+                    <div style="text-align: right;"><div class="label">Status</div><div id="status-text" class="value">ACTIVE</div></div>
                 </div>
-                <div style="text-align: right;">
-                    <div class="label">Status</div>
-                    <div class="value">ACTIVE</div>
-                </div>
+                <div class="card-row" style="margin-bottom:0;"><span class="label">Energy</span><span id="energy-text" class="value">1000/1000</span></div>
+                <div class="bar-bg"><div id="energy-bar" class="bar-fill" style="width: 100%;"></div></div>
+                
+                <button id="boost-btn" class="btn-boost" onclick="startBoost()">⚡ BOOST SPEED</button>
             </div>
 
-            <div class="progress-container">
-                <div class="card-row" style="margin-bottom: 5px;">
-                    <span class="label">Energy</span>
-                    <span class="value" id="energy-text">1000/1000</span>
-                </div>
-                <div class="bar-bg">
-                    <div id="energy-bar" class="bar-fill" style="width: 100%;"></div>
-                </div>
+            <div class="coin-wrap">
+                <div class="egc-coin" id="coin">EGC</div>
             </div>
-
-            <button class="btn-boost" onclick="Telegram.WebApp.showAlert('Boost activated!')">⚡ BOOST SPEED</button>
         </div>
 
-        <div class="coin-wrap">
-            <div class="egc-coin" id="coin">EGC</div>
+        <div id="page-tasks" class="page">
+            <h2 style="color: var(--egc-gold);">Tasks</h2>
+            <p style="color: #888;">Complete missions to earn EGC.</p>
+            <div style="background:var(--card-bg); padding:15px; border-radius:15px; margin-bottom:10px;">Follow on X (+5,000 EGC)</div>
+            <div style="background:var(--card-bg); padding:15px; border-radius:15px;">Join Telegram (+2,000 EGC)</div>
+        </div>
+
+        <div id="page-friends" class="page">
+            <h2 style="color: var(--egc-gold);">Invite Friends</h2>
+            <div style="background: linear-gradient(135deg, var(--egc-orange), var(--egc-gold)); padding: 20px; border-radius: 20px; text-align: center;">
+                <button onclick="Telegram.WebApp.showAlert('Link copied!')" style="width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: bold;">COPY INVITE LINK</button>
+            </div>
+        </div>
+
+        <div id="page-wallet" class="page">
+            <h2 style="color: var(--egc-gold);">Wallet</h2>
+            <div style="background:var(--card-bg); padding:20px; border-radius:20px; text-align: center;">
+                <div class="label">Balance</div>
+                <div style="font-size: 32px; font-weight: 900;">0.00 EGC</div>
+                <button disabled style="margin-top:15px; width:100%; padding:10px; border-radius:10px; border:none; background:#222; color:#555;">WITHDRAW (Coming Soon)</button>
+            </div>
         </div>
 
         <div class="nav">
-            <div class="nav-item active">
-                <div class="nav-icon">🏠</div>HOME
-            </div>
-            <div class="nav-item">
-                <div class="nav-icon">📊</div>TASKS
-            </div>
-            <div class="nav-item">
-                <div class="nav-icon">👥</div>FRIENDS
-            </div>
-            <div class="nav-item">
-                <div class="nav-icon">💰</div>WALLET
-            </div>
+            <div class="nav-item active" onclick="navTo('page-home', this)"><div class="nav-icon">🏠</div>HOME</div>
+            <div class="nav-item" onclick="navTo('page-tasks', this)"><div class="nav-icon">📋</div>TASKS</div>
+            <div class="nav-item" onclick="navTo('page-friends', this)"><div class="nav-icon">👥</div>FRIENDS</div>
+            <div class="nav-item" onclick="navTo('page-wallet', this)"><div class="nav-icon">💰</div>WALLET</div>
         </div>
+
     </div>
 
     <script>
         let score = parseInt(localStorage.getItem('egc_score')) || 0;
         let energy = 1000;
+        let isBoosting = false;
         const tg = window.Telegram.WebApp;
         tg.expand();
+
+        function navTo(pId, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(pId).classList.add('active-page');
+            el.classList.add('active');
+        }
 
         function updateUI() {
             document.getElementById('balance').innerHTML = score.toLocaleString() + " <span>EGC</span>";
             document.getElementById('energy-text').innerText = `${energy}/1000`;
             document.getElementById('energy-bar').style.width = (energy / 10) + "%";
             localStorage.setItem('egc_score', score);
+            checkBoostCooldown();
+        }
+
+        // Boost Logic
+        function startBoost() {
+            const lastBoost = localStorage.getItem('last_boost');
+            const now = Date.now();
+            
+            if (!lastBoost || now - lastBoost > 8 * 60 * 60 * 1000) {
+                isBoosting = true;
+                localStorage.setItem('last_boost', now);
+                document.getElementById('coin').classList.add('boosting');
+                document.getElementById('status-text').innerText = "BOOSTING x2";
+                document.getElementById('status-text').style.color = "var(--egc-gold)";
+                
+                // Boost lasts 30 seconds
+                setTimeout(() => {
+                    isBoosting = false;
+                    document.getElementById('coin').classList.remove('boosting');
+                    document.getElementById('status-text').innerText = "ACTIVE";
+                    document.getElementById('status-text').style.color = "#fff";
+                }, 30000);
+            }
+        }
+
+        function checkBoostCooldown() {
+            const lastBoost = localStorage.getItem('last_boost');
+            const btn = document.getElementById('boost-btn');
+            if (lastBoost) {
+                const now = Date.now();
+                const diff = now - lastBoost;
+                const cooldown = 8 * 60 * 60 * 1000;
+                
+                if (diff < cooldown) {
+                    const remaining = cooldown - diff;
+                    const hours = Math.floor(remaining / (1000 * 60 * 60));
+                    const mins = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                    btn.disabled = true;
+                    btn.innerText = `READY IN ${hours}h ${mins}m`;
+                } else {
+                    btn.disabled = false;
+                    btn.innerText = "⚡ BOOST SPEED";
+                }
+            }
         }
 
         document.getElementById('coin').addEventListener('touchstart', (e) => {
             e.preventDefault();
             if (energy > 0) {
-                score++;
+                let gain = isBoosting ? 2 : 1;
+                score += gain;
                 energy -= 2;
                 
-                // Animation
                 const p = document.createElement('div');
-                p.className = 'plus-egc'; p.innerText = '+1';
+                p.className = 'plus-egc'; p.innerText = '+' + gain;
                 p.style.left = e.touches[0].pageX + 'px';
                 p.style.top = e.touches[0].pageY + 'px';
                 document.body.appendChild(p);
@@ -166,7 +205,6 @@
             }
         });
 
-        // Recovery
         setInterval(() => {
             if (energy < 1000) energy += 1;
             updateUI();
@@ -176,3 +214,4 @@
     </script>
 </body>
 </html>
+
