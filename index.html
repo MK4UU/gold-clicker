@@ -23,7 +23,7 @@
         .main-balance { font-size: 42px; font-weight: 900; }
         .main-balance span { font-size: 16px; color: var(--egc-gold); }
 
-        /* Fancy Blue Boost Button */
+        /* Rich Blue Boost Button */
         .btn-boost-fancy { 
             width: 100%; padding: 24px; border-radius: 20px; border: none; 
             background: linear-gradient(135deg, var(--blue-deep), #5e5ce6);
@@ -88,16 +88,21 @@
         <div id="page-tasks" class="page">
             <h2 style="color: var(--egc-gold);">Tasks</h2>
             <div class="card">
-                📢 <b>Join Community Group</b><br>
+                📢 <b>Join EGC Community</b><br>
                 <small style="color:var(--egc-gold)">+2,500 EGC</small>
-                <a href="#" onclick="tg.openTelegramLink('https://t.me/EGC_Network_Group')" class="task-btn">JOIN GROUP</a>
+                <a href="#" onclick="tg.openTelegramLink('https://t.me/EGC_Network')" class="task-btn">JOIN GROUP</a>
+            </div>
+            <div class="card">
+                🚀 <b>Follow EGC on X</b><br>
+                <small style="color:var(--egc-gold)">+5,000 EGC</small>
+                <a href="#" class="task-btn">FOLLOW</a>
             </div>
         </div>
 
         <div id="page-friends" class="page">
             <h2 style="color: var(--egc-gold);">Invite Friends</h2>
             <div class="card" style="text-align: center;">
-                <p>New friends joining via link must reach <b>500 clicks</b> to unlock a <b>10,000 EGC</b> bonus for both!</p>
+                <p>Friends must reach <b>500 clicks</b> to unlock a <b>10,000 EGC</b> bonus for both!</p>
                 <button onclick="inviteFriend()" style="width: 100%; padding: 18px; border-radius: 15px; border: none; background: var(--blue-deep); color: white; font-weight: 900; font-size: 16px;">
                     INVITE A FRIEND
                 </button>
@@ -125,7 +130,6 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Confirmation Pop-up
         tg.showConfirm("Are you ready to start mining EGC?", (isConfirmed) => {
             if (!isConfirmed) tg.close();
         });
@@ -133,7 +137,6 @@
         let score = parseInt(localStorage.getItem('egc_score')) || 0;
         let energy = 1000;
         
-        // Referral Logic (Handles both start and startapp parameters)
         const urlParams = new URLSearchParams(window.location.search);
         const isInvited = urlParams.has('tgWebAppStartParam') || localStorage.getItem('is_invited') === 'true';
         let refClicks = parseInt(localStorage.getItem('ref_clicks')) || 0;
@@ -152,10 +155,9 @@
 
         function inviteFriend() {
             const botName = "Gold_Cliker_Nova_Bot"; 
-            const appShortName = "app"; // Check this in BotFather
+            const appShortName = "app"; 
             const userId = tg.initDataUnsafe.user?.id || 'user';
             
-            // Direct Link to open the App immediately
             const directAppLink = `https://t.me/${botName}/${appShortName}?startapp=ref_${userId}`;
             const shareText = encodeURIComponent("Join my mining team on EGC! Reach 500 clicks and we both get 10k bonus! 🚀");
             
@@ -187,7 +189,7 @@
             const now = Date.now();
             if (!lastBoost || now - lastBoost > 8 * 60 * 60 * 1000) {
                 localStorage.setItem('last_boost', now);
-                tg.showAlert("Boost Activated! Energy consumption reduced!");
+                tg.showAlert("Boost Activated! Energy recovery set!");
                 updateUI();
             }
         }
@@ -228,4 +230,3 @@
     </script>
 </body>
 </html>
-
