@@ -1,97 +1,183 @@
 <!DOCTYPE html>
-<html lang="he">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gold Clicker Nova | Pro Edition</title>
+    <title>Gold Clicker Nova | Global Edition</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --bg: #0b0e14; --neon-blue: #00f2ff; --neon-gold: #ffac09; --neon-purple: #bc13fe; }
-        body, html { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; padding: 0; height: 100vh; overflow: hidden; }
-        .app-container { height: 100vh; display: flex; flex-direction: column; border: 3px solid var(--neon-blue); box-sizing: border-box; }
+        :root { 
+            --bg: #0b0e14; 
+            --neon-blue: #00f2ff; 
+            --neon-gold: #ffac09; 
+            --neon-purple: #bc13fe; 
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+        
+        body, html { 
+            background: var(--bg); 
+            background: radial-gradient(circle at top, #1a1f2c 0%, #0b0e14 100%);
+            color: #fff; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; padding: 0; 
+            height: 100vh; overflow: hidden; 
+        }
 
-        #lang-btn { position: absolute; top: 15px; left: 15px; background: var(--neon-purple); border: none; color: white; padding: 5px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; z-index: 1000; }
+        .app-container { 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            border: 3px solid var(--neon-blue); 
+            box-sizing: border-box; 
+        }
 
-        .page { display: none; flex-direction: column; flex-grow: 1; padding: 20px; animation: fadeIn 0.3s; overflow-y: auto; padding-bottom: 90px; }
+        /* Page Management */
+        .page { 
+            display: none; 
+            flex-direction: column; 
+            flex-grow: 1; 
+            padding: 20px; 
+            animation: fadeIn 0.3s ease; 
+            overflow-y: auto; 
+            padding-bottom: 90px; 
+        }
         .active-page { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .header { display: flex; justify-content: space-around; padding: 10px 10px 10px 60px; background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1); }
+        /* Header Stats */
+        .header { 
+            display: flex; 
+            justify-content: space-around; 
+            padding: 15px; 
+            background: rgba(255,255,255,0.03); 
+            border-bottom: 1px solid rgba(255,255,255,0.1); 
+        }
         .stat { text-align: center; }
-        .stat-label { font-size: 10px; color: #888; }
+        .stat-label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
         .stat-num { font-size: 18px; font-weight: bold; color: var(--neon-gold); }
 
-        /* הגדלת המטבע */
-        .game-area { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #score-display { font-size: 60px; font-weight: 900; margin-bottom: 15px; text-shadow: 0 0 15px var(--neon-gold); }
+        /* Main Game Area */
+        .game-area { 
+            flex-grow: 1; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        #score-display { 
+            font-size: 65px; 
+            font-weight: 900; 
+            margin-bottom: 15px; 
+            text-shadow: 0 0 20px rgba(255, 172, 9, 0.4); 
+        }
         
         .coin-box { 
-            width: 260px; height: 260px; /* הוגדל מ-200 */
-            background: radial-gradient(circle, rgba(255, 172, 9, 0.3) 0%, transparent 75%);
+            width: 270px; height: 270px; 
+            background: radial-gradient(circle, rgba(255, 172, 9, 0.25) 0%, transparent 75%);
             display: flex; align-items: center; justify-content: center;
-            font-size: 160px; border-radius: 50%; cursor: pointer;
-            transition: transform 0.05s; user-select: none; -webkit-tap-highlight-color: transparent;
-            filter: drop-shadow(0 0 20px var(--neon-gold));
+            font-size: 170px; border-radius: 50%; cursor: pointer;
+            transition: transform 0.05s; user-select: none; 
+            -webkit-tap-highlight-color: transparent;
+            filter: drop-shadow(0 0 25px var(--neon-gold));
         }
         .coin-box:active { transform: scale(0.92); }
 
-        .nav { position: fixed; bottom: 0; width: 100%; height: 75px; display: flex; background: #161b22; border-top: 1px solid var(--neon-blue); z-index: 1000; }
-        .nav-item { flex: 1; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; color: #555; cursor: pointer; }
-        .nav-item.active { color: var(--neon-blue); text-shadow: 0 0 5px var(--neon-blue); }
+        /* Navigation Menu */
+        .nav { 
+            position: fixed; bottom: 0; width: 100%; height: 75px; 
+            display: flex; background: #11141a; 
+            border-top: 1px solid var(--neon-blue); z-index: 1000; 
+        }
+        .nav-item { 
+            flex: 1; display: flex; 
+            align-items: center; justify-content: center; 
+            font-weight: 800; font-size: 12px; color: #555; 
+            cursor: pointer; transition: 0.2s;
+        }
+        .nav-item.active { 
+            color: var(--neon-blue); 
+            text-shadow: 0 0 10px var(--neon-blue); 
+        }
 
-        .card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.1); }
-        .invite-btn { background: var(--neon-blue); color: #000; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; font-size: 12px; }
-        
-        .plus-one { position: absolute; color: var(--neon-gold); font-weight: bold; font-size: 30px; animation: fly 0.8s forwards; pointer-events: none; z-index: 500; }
-        @keyframes fly { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-150px); opacity: 0; } }
+        /* Cards & Buttons */
+        .card { 
+            background: var(--glass); 
+            padding: 15px; border-radius: 12px; 
+            margin-bottom: 10px; display: flex; 
+            justify-content: space-between; align-items: center; 
+            border: 1px solid rgba(255,255,255,0.08); 
+        }
+        .action-btn { 
+            background: var(--neon-blue); 
+            color: #000; border: none; 
+            padding: 10px 20px; border-radius: 8px; 
+            font-weight: 900; cursor: pointer;
+        }
+
+        /* Floating +1 Effect */
+        .plus-one { 
+            position: absolute; color: var(--neon-gold); 
+            font-weight: 900; font-size: 35px; 
+            animation: fly 0.8s forwards; pointer-events: none; z-index: 500; 
+        }
+        @keyframes fly { 
+            0% { transform: translateY(0); opacity: 1; } 
+            100% { transform: translateY(-160px); opacity: 0; } 
+        }
     </style>
 </head>
 <body>
 
     <div class="app-container">
-        <button id="lang-btn" onclick="toggleLang()">EN</button>
-
         <div class="header">
-            <div class="stat"><div id="label-income" class="stat-label">רווח לשנייה</div><div id="pps-display" class="stat-num">0</div></div>
-            <div class="stat"><div id="label-balance" class="stat-label">זהב</div><div id="balance-display" class="stat-num">0</div></div>
+            <div class="stat">
+                <div class="stat-label">Income /s</div>
+                <div id="pps-display" class="stat-num">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Total Gold</div>
+                <div id="balance-display" class="stat-num">0</div>
+            </div>
         </div>
 
         <div id="page-mine" class="page active-page">
             <div class="game-area">
                 <div id="score-display">0</div>
                 <div id="coin" class="coin-box">🪙</div>
-                <p id="click-msg" style="margin-top: 25px; color: var(--neon-blue); font-weight: bold; letter-spacing: 1px;">TAP TO MINE</p>
+                <p style="margin-top: 30px; color: var(--neon-blue); font-weight: 900; letter-spacing: 2px;">TAP TO MINE</p>
             </div>
         </div>
 
         <div id="page-shop" class="page">
-            <h2 id="title-shop" style="color: var(--neon-blue)">UPGRADE</h2>
+            <h2 style="color: var(--neon-blue); font-weight: 900;">MINING UPGRADES</h2>
             <div class="card">
-                <div><b>Auto Clicker</b><br><small>+2 /s</small></div>
-                <button onclick="buy(2, 500)" class="invite-btn">500</button>
+                <div><b>Auto Bot v1</b><br><small style="color:var(--neon-purple)">+2 Gold/s</small></div>
+                <button onclick="buy(2, 500)" class="action-btn">500</button>
+            </div>
+            <div class="card">
+                <div><b>Mega Drill</b><br><small style="color:var(--neon-purple)">+15 Gold/s</small></div>
+                <button onclick="buy(15, 4000)" class="action-btn">4,000</button>
             </div>
         </div>
 
         <div id="page-earn" class="page">
-            <h2 id="title-earn" style="color: var(--neon-purple)">REFERRAL TASKS</h2>
+            <h2 style="color: var(--neon-purple); font-weight: 900;">REFERRAL TASKS</h2>
             
-            <div style="background: var(--neon-purple); padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center;">
-                <h3 style="margin:0">Invite Friends & Earn</h3>
-                <p style="font-size: 12px;">Share your link to unlock rewards!</p>
-                <button onclick="shareLink()" style="width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: 900; background: #fff; color: var(--neon-purple);">SHARE LINK</button>
+            <div style="background: linear-gradient(135deg, var(--neon-purple), #6a11cb); padding: 20px; border-radius: 15px; margin-bottom: 20px; text-align: center;">
+                <h3 style="margin:0">Invite & Get Rich</h3>
+                <p style="font-size: 13px; opacity: 0.9;">Share your link and get instant gold!</p>
+                <button onclick="shareLink()" style="width: 100%; margin-top:10px; padding: 14px; border-radius: 10px; border: none; font-weight: 900; background: #fff; color: #6a11cb;">INVITE FRIENDS</button>
             </div>
 
-            <div class="card"><div><b>1 Friend</b></div><div style="color:var(--neon-gold)">+10,000</div></div>
-            <div class="card"><div><b>2 Friends</b></div><div style="color:var(--neon-gold)">+15,000</div></div>
-            <div class="card"><div><b>3 Friends</b></div><div style="color:var(--neon-gold)">+25,000</div></div>
-            <div class="card"><div><b>5 Friends</b></div><div style="color:var(--neon-gold)">+50,000</div></div>
-            <div class="card"><div><b>10 Friends</b></div><div style="color:var(--neon-gold)">+100,000</div></div>
+            <div id="referral-list">
+                </div>
         </div>
 
         <div id="page-rank" class="page">
-            <h2 id="title-rank" style="color: var(--neon-gold)">LEADERBOARD</h2>
-            <div class="card"><div>1. Elite Player</div><div style="color:var(--neon-gold)">2.5M</div></div>
-            <div class="card"><div id="rank-you">You</div><div id="your-rank">0</div></div>
+            <h2 style="color: var(--neon-gold); font-weight: 900;">LEADERBOARD</h2>
+            <div class="card" style="border-left: 4px solid var(--neon-gold);"><div>1. Crypto King</div><div style="color:var(--neon-gold)">5,000,000</div></div>
+            <div class="card"><div>2. Master Miner</div><div>1,200,000</div></div>
+            <div class="card" style="background: rgba(0, 242, 255, 0.1);"><div>YOU</div><div id="your-rank">0</div></div>
         </div>
 
         <div class="nav">
@@ -105,23 +191,22 @@
     <script>
         let score = parseInt(localStorage.getItem('score')) || 0;
         let pps = parseInt(localStorage.getItem('pps')) || 0;
-        let currentLang = 'he';
-
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        function shareLink() {
-            const botUrl = "https://t.me/@Gold_Clicker_Nova_Bot"; // תחליף בשם הבוט שלך
-            const shareUrl = `https://t.me/share/url?url=${botUrl}&text=Join me on Gold Clicker and earn rewards!`;
-            tg.openTelegramLink(shareUrl);
+        // Build Referral List 1-10
+        const refList = document.getElementById('referral-list');
+        for(let i=1; i<=10; i++) {
+            refList.innerHTML += `
+                <div class="card">
+                    <div><b>Invite ${i} Friend${i > 1 ? 's' : ''}</b></div>
+                    <div style="color:var(--neon-gold); font-weight:900;">+${(i * 10000).toLocaleString()}</div>
+                </div>`;
         }
 
-        function toggleLang() {
-            currentLang = currentLang === 'he' ? 'en' : 'he';
-            document.body.dir = currentLang === 'he' ? 'rtl' : 'ltr';
-            document.getElementById('lang-btn').innerText = currentLang === 'he' ? "EN" : "HE";
-            // כאן אפשר להוסיף את תרגומי המילים כפי שעשינו קודם
-            updateUI();
+        function shareLink() {
+            const url = `https://t.me/share/url?url=https://t.me/YOUR_BOT_USERNAME&text=Join me on Gold Clicker! Get gold and climb the ranks!`;
+            tg.openTelegramLink(url);
         }
 
         function showP(pId, el) {
@@ -138,6 +223,13 @@
             document.getElementById('your-rank').innerText = score.toLocaleString();
             localStorage.setItem('score', score);
             localStorage.setItem('pps', pps);
+        }
+
+        function buy(amt, cost) {
+            if (score >= cost) {
+                score -= cost; pps += amt; updateUI();
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            } else { tg.showAlert("Need more gold!"); }
         }
 
         document.getElementById('coin').addEventListener('touchstart', (e) => {
