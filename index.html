@@ -1,132 +1,121 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EGC Network | Official</title>
+    <title>EGC Network | Elite Mining</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { 
             --bg: #05070a; --card-bg: #11151f;
             --egc-gold: #ffac09; --egc-orange: #f35626; 
-            --blue-glow: #00d2ff; --blue-deep: #007aff;
-            --green: #4cd964;
+            --blue: #007aff; --green: #4cd964;
         }
-        body, html { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 0; height: 100vh; overflow: hidden; }
+        body, html { 
+            background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; 
+            margin: 0; padding: 0; height: 100vh; overflow: hidden; user-select: none;
+        }
         .app-container { height: 100vh; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; }
 
-        .page { display: none; flex-direction: column; flex-grow: 1; animation: fadeIn 0.4s; overflow-y: auto; padding-bottom: 90px; }
+        /* Header */
+        .header { text-align: center; margin-bottom: 15px; }
+        .balance-val { font-family: 'Orbitron', sans-serif; font-size: 42px; font-weight: 900; text-shadow: 0 0 15px rgba(255,172,9,0.3); }
+
+        /* Pages */
+        .page { display: none; flex-direction: column; flex-grow: 1; animation: fadeIn 0.3s; overflow-y: auto; padding-bottom: 100px; }
         .active-page { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
-        .header { text-align: center; margin-bottom: 10px; flex-shrink: 0; }
-        .main-balance { font-size: 40px; font-weight: 900; }
-        .main-balance span { font-size: 14px; color: var(--egc-gold); }
-
-        .btn-boost-fancy { 
-            width: 100%; padding: 20px; border-radius: 18px; border: none; 
-            background: linear-gradient(135deg, var(--blue-deep), #5e5ce6);
-            color: white; font-weight: 900; font-size: 18px; margin-top: 10px; cursor: pointer;
-            box-shadow: 0 0 20px rgba(0, 122, 255, 0.4);
-        }
-        .btn-boost-fancy:disabled { background: #222; box-shadow: none; color: #555; }
-
-        .coin-wrap { flex-grow: 1; display: flex; align-items: center; justify-content: center; min-height: 220px; }
-        .egc-coin { 
-            width: 190px; height: 190px; background: linear-gradient(135deg, var(--egc-gold), var(--egc-orange));
+        /* Coin Area */
+        .coin-wrap { flex-grow: 1; display: flex; align-items: center; justify-content: center; position: relative; }
+        .coin-circle { 
+            width: 220px; height: 220px; background: radial-gradient(circle, var(--egc-gold), var(--egc-orange));
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 45px; font-weight: 900; box-shadow: 0 0 30px rgba(243, 86, 38, 0.3);
-            transition: transform 0.05s; user-select: none;
+            font-size: 55px; font-weight: 900; box-shadow: 0 0 40px rgba(243, 86, 38, 0.3);
+            transition: transform 0.05s; cursor: pointer; -webkit-tap-highlight-color: transparent;
         }
-        .egc-coin:active { transform: scale(0.92); }
+        .coin-circle:active { transform: scale(0.92); }
 
-        .card { background: var(--card-bg); padding: 15px; border-radius: 18px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
-        .shop-item { display: flex; justify-content: space-between; align-items: center; }
-        .buy-btn, .task-btn { background: var(--green); color: black; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; text-decoration: none; text-align: center; }
-        .buy-btn:disabled { background: #333; color: #777; }
-        .task-btn { background: var(--blue-deep); color: white; }
+        /* Leaderboard Style */
+        .leaderboard-list { background: var(--card-bg); border-radius: 20px; overflow: hidden; margin-top: 10px; }
+        .leader-item { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .leader-rank { width: 30px; font-weight: bold; color: var(--egc-gold); }
+        .leader-avatar { width: 35px; height: 35px; background: #252c3d; border-radius: 50%; margin-right: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .leader-info { flex-grow: 1; }
+        .leader-score { font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--egc-gold); }
 
-        .nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #0d1117; display: flex; border-top: 1px solid #1c222d; z-index: 1000; }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; font-size: 10px; font-weight: bold; cursor: pointer; }
-        .nav-item.active { color: var(--egc-gold); }
+        /* Nav */
+        .nav-footer { position: fixed; bottom: 0; left: 0; width: 100%; height: 80px; background: #0d1117; display: flex; border-top: 1px solid #1c222d; z-index: 1000; }
+        .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; font-size: 11px; font-weight: bold; }
+        .nav-btn.active { color: var(--egc-gold); }
+        .nav-icon { font-size: 22px; margin-bottom: 4px; }
+
+        /* Floating Points */
+        .floating-num { position: absolute; font-weight: 900; font-size: 28px; color: white; pointer-events: none; animation: flyUp 0.7s forwards; }
+        @keyframes flyUp { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-120px); } }
+
+        .card { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
     <div class="app-container">
         <div class="header">
-            <div id="balance" class="main-balance">0 <span>EGC</span></div>
-            <div id="bot-status" style="font-size: 10px; color: var(--green); visibility: hidden;">🤖 AUTO-BOT ACTIVE (+1/s)</div>
+            <div id="balance" class="balance-val">0</div>
+            <div style="font-size: 12px; color: var(--egc-gold); font-weight: bold; letter-spacing: 2px;">EGC NETWORK</div>
         </div>
 
         <div id="page-home" class="page active-page">
-            <div class="card">
+            <div class="card" style="margin-bottom: 10px; padding: 12px;">
                 <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px;">
                     <span>ENERGY</span>
                     <span id="energy-text">1000/1000</span>
                 </div>
                 <div style="height: 6px; background: #1c222d; border-radius: 10px; overflow: hidden;">
-                    <div id="energy-bar" style="height: 100%; width: 100%; background: var(--blue-glow); transition: 0.2s;"></div>
+                    <div id="energy-bar" style="height: 100%; width: 100%; background: var(--blue); transition: 0.3s;"></div>
                 </div>
-                <button id="boost-btn" class="btn-boost-fancy" onclick="startBoost()">⚡ SUPER BOOST</button>
             </div>
-            <div class="coin-wrap">
-                <div class="egc-coin" id="coin">EGC</div>
+            <div class="coin-wrap" id="coin-trigger">
+                <div class="coin-circle">EGC</div>
+            </div>
+        </div>
+
+        <div id="page-leaderboard" class="page">
+            <h2 style="color: var(--egc-gold);">Global Ranking</h2>
+            <div class="leaderboard-list">
+                <div class="leader-item" style="background: rgba(255,172,9,0.1);">
+                    <div class="leader-rank">#?</div>
+                    <div class="leader-avatar" id="user-avatar">👤</div>
+                    <div class="leader-info">
+                        <div id="user-name" style="font-weight: bold;">You</div>
+                        <div class="leader-score" id="user-score">0 EGC</div>
+                    </div>
+                </div>
+                <hr style="border: 0; border-top: 1px solid #333; margin: 0;">
+                <div class="leader-item"><div class="leader-rank">1</div><div class="leader-avatar">🐳</div><div class="leader-info"><b>CryptoKing</b><div class="leader-score">1,250,000 EGC</div></div></div>
+                <div class="leader-item"><div class="leader-rank">2</div><div class="leader-avatar">💎</div><div class="leader-info"><b>TonMaster</b><div class="leader-score">980,500 EGC</div></div></div>
+                <div class="leader-item"><div class="leader-rank">3</div><div class="leader-avatar">🚀</div><div class="leader-info"><b>EGC_Whale</b><div class="leader-score">750,200 EGC</div></div></div>
             </div>
         </div>
 
         <div id="page-shop" class="page">
-            <h2 style="color: var(--egc-gold);">Upgrades</h2>
-            <div class="card shop-item">
-                <div>
-                    <b>Mining Bot 🤖</b><br>
-                    <small>Mines 1 EGC every sec</small><br>
-                    <span style="color: var(--egc-gold)">50,000 EGC</span>
-                </div>
-                <button class="buy-btn" id="buy-bot" onclick="buyItem('bot', 50000)">BUY</button>
+            <h2 style="color: var(--egc-gold);">Boosters</h2>
+            <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+                <div><b>Mining Bot 🤖</b><br><small id="bot-lvl-text">Level 0 (0/sec)</small></div>
+                <button onclick="buyUpgrade('bot')" id="btn-bot" class="nav-icon" style="background: var(--blue); border: none; color: white; padding: 8px 15px; border-radius: 10px; font-size: 14px;">Upgrade</button>
             </div>
-            <div class="card shop-item">
-                <div>
-                    <b>Multi-Tap ⚡</b><br>
-                    <small>Level Up your clicks</small><br>
-                    <span style="color: var(--egc-gold)">10,000 EGC</span>
-                </div>
-                <button class="buy-btn" id="buy-multi" onclick="buyItem('multi', 10000)">UPGRADE</button>
+            <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+                <div><b>Multi-Tap ⚡</b><br><small id="tap-lvl-text">Level 1 (+1/click)</small></div>
+                <button onclick="buyUpgrade('tap')" id="btn-tap" class="nav-icon" style="background: var(--blue); border: none; color: white; padding: 8px 15px; border-radius: 10px; font-size: 14px;">Upgrade</button>
             </div>
         </div>
 
-        <div id="page-tasks" class="page">
-            <h2 style="color: var(--egc-gold);">Tasks</h2>
-            <div class="card shop-item">
-                <div>📢 <b>Join Community</b><br><small>+2,500 EGC</small></div>
-                <a href="#" onclick="tg.openTelegramLink('https://t.me/EGC_Network')" class="task-btn">JOIN</a>
-            </div>
-        </div>
-
-        <div id="page-friends" class="page">
-            <h2 style="color: var(--egc-gold);">Invite</h2>
-            <div class="card" style="text-align: center;">
-                <p>Friends must reach <b>500 clicks</b> to unlock a <b>10,000 EGC</b> bonus!</p>
-                <button onclick="inviteFriend()" class="btn-boost-fancy">INVITE FRIENDS</button>
-            </div>
-        </div>
-
-        <div id="page-wallet" class="page">
-            <h2 style="color: var(--egc-gold);">Wallet</h2>
-            <div class="card" style="text-align: center;">
-                <div style="font-size: 12px; color:#888;">Balance</div>
-                <div style="font-size: 32px; font-weight: 900; margin: 10px 0;">0.00 EGC</div>
-                <button disabled class="btn-boost-fancy" style="background:#222; box-shadow:none; color:#555;">CONNECT WALLET</button>
-            </div>
-        </div>
-
-        <div class="nav">
-            <div class="nav-item active" onclick="navTo('page-home', this)">🏠<br>HOME</div>
-            <div class="nav-item" onclick="navTo('page-tasks', this)">📋<br>TASKS</div>
-            <div class="nav-item" onclick="navTo('page-shop', this)">🛒<br>SHOP</div>
-            <div class="nav-item" onclick="navTo('page-friends', this)">👥<br>FRIENDS</div>
-            <div class="nav-item" onclick="navTo('page-wallet', this)">💰<br>WALLET</div>
+        <div class="nav-footer">
+            <div class="nav-btn active" onclick="navTo('page-home', this)"><span class="nav-icon">🏠</span>Home</div>
+            <div class="nav-btn" onclick="navTo('page-leaderboard', this)"><span class="nav-icon">🏆</span>Rank</div>
+            <div class="nav-btn" onclick="navTo('page-shop', this)"><span class="nav-icon">🚀</span>Boost</div>
+            <div class="nav-btn" onclick="tg.showAlert('Wallet connect coming soon!')"><span class="nav-icon">💰</span>Wallet</div>
         </div>
     </div>
 
@@ -134,74 +123,87 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        tg.showConfirm("Welcome to EGC Network! Start mining?", (ok) => { if(!ok) tg.close(); });
+        // Data
+        let score = parseFloat(localStorage.getItem('egc_v3_score')) || 0;
+        let energy = parseInt(localStorage.getItem('egc_v3_energy')) || 1000;
+        let botLvl = parseInt(localStorage.getItem('egc_v3_bot')) || 0;
+        let tapLvl = parseInt(localStorage.getItem('egc_v3_tap')) || 1;
 
-        let score = parseInt(localStorage.getItem('egc_score')) || 0;
-        let energy = 1000;
-        let hasBot = localStorage.getItem('egc_has_bot') === 'true';
-        let tapLevel = parseInt(localStorage.getItem('egc_tap_level')) || 1;
-
-        function navTo(pId, el) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(pId).classList.add('active-page');
-            el.classList.add('active');
-        }
-
-        function buyItem(type, cost) {
-            if (score >= cost) {
-                score -= cost;
-                if (type === 'bot') {
-                    hasBot = true;
-                    localStorage.setItem('egc_has_bot', 'true');
-                } else if (type === 'multi') {
-                    tapLevel++;
-                    localStorage.setItem('egc_tap_level', tapLevel);
-                }
-                updateUI();
-                tg.showAlert("Success!");
-            } else {
-                tg.showAlert("Not enough EGC!");
+        // Init User Info from Telegram
+        if (tg.initDataUnsafe.user) {
+            document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name;
+            if (tg.initDataUnsafe.user.photo_url) {
+                document.getElementById('user-avatar').innerHTML = `<img src="${tg.initDataUnsafe.user.photo_url}" style="width:100%; border-radius:50%">`;
             }
         }
 
-        function updateUI() {
-            document.getElementById('balance').innerHTML = score.toLocaleString() + " <span>EGC</span>";
-            document.getElementById('energy-text').innerText = `${energy}/1000`;
-            document.getElementById('energy-bar').style.width = (energy / 10) + "%";
-            document.getElementById('bot-status').style.visibility = hasBot ? "visible" : "hidden";
-            document.getElementById('buy-bot').disabled = hasBot;
-            if(hasBot) document.getElementById('buy-bot').innerText = "OWNED";
-            localStorage.setItem('egc_score', score);
+        function navTo(pId, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
+            document.getElementById(pId).classList.add('active-page');
+            el.classList.add('active');
+            if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
         }
 
-        // Auto-Bot Interval
-        setInterval(() => { if (hasBot) { score += 1; updateUI(); } }, 1000);
+        function updateUI() {
+            document.getElementById('balance').innerText = Math.floor(score).toLocaleString();
+            document.getElementById('energy-text').innerText = `${energy}/1000`;
+            document.getElementById('energy-bar').style.width = (energy / 10) + "%";
+            document.getElementById('user-score').innerText = Math.floor(score).toLocaleString() + " EGC";
+            
+            // Shop labels
+            document.getElementById('bot-lvl-text').innerText = `Level ${botLvl} (${botLvl}/sec)`;
+            document.getElementById('tap-lvl-text').innerText = `Level ${tapLvl} (+${tapLvl}/click)`;
+            
+            localStorage.setItem('egc_v3_score', score);
+            localStorage.setItem('egc_v3_energy', energy);
+            localStorage.setItem('egc_v3_bot', botLvl);
+            localStorage.setItem('egc_v3_tap', tapLvl);
+        }
 
-        // Click Logic
-        document.getElementById('coin').addEventListener('touchstart', (e) => {
+        function buyUpgrade(type) {
+            if (type === 'bot') {
+                let cost = (botLvl + 1) * 25000;
+                if (score >= cost) { score -= cost; botLvl++; tg.showAlert("Bot Leveled Up!"); }
+                else tg.showAlert("Need " + cost.toLocaleString() + " EGC");
+            } else {
+                let cost = tapLvl * 5000;
+                if (score >= cost) { score -= cost; tapLvl++; tg.showAlert("Taps Strengthened!"); }
+                else tg.showAlert("Need " + cost.toLocaleString() + " EGC");
+            }
+            updateUI();
+        }
+
+        // Interaction
+        document.getElementById('coin-trigger').addEventListener('touchstart', (e) => {
             e.preventDefault();
-            if (energy > 0) {
-                score += tapLevel;
-                energy -= 1;
+            if (energy >= tapLvl) {
+                score += tapLvl;
+                energy -= tapLvl;
+                const t = e.touches[0];
+                showFloatingNum(t.clientX, t.clientY, `+${tapLvl}`);
                 updateUI();
                 if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
             }
         });
 
-        function startBoost() {
-            energy = 1000;
+        function showFloatingNum(x, y, txt) {
+            const n = document.createElement('div');
+            n.className = 'floating-num';
+            n.style.left = `${x}px`;
+            n.style.top = `${y}px`;
+            n.innerText = txt;
+            document.body.appendChild(n);
+            setTimeout(() => n.remove(), 700);
+        }
+
+        // Intervals
+        setInterval(() => {
+            if (botLvl > 0) score += (botLvl / 1); 
+            if (energy < 1000) energy = Math.min(1000, energy + 2);
             updateUI();
-            tg.showAlert("Energy Refilled!");
-        }
+        }, 1000);
 
-        function inviteFriend() {
-            const botName = "Gold_Cliker_Nova_Bot"; 
-            const link = `https://t.me/${botName}/app?startapp=ref_${tg.initDataUnsafe.user?.id || 'user'}`;
-            tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=Join%20EGC%20Network!`);
-        }
-
-        setInterval(() => { if (energy < 1000) energy++; updateUI(); }, 1500);
         updateUI();
     </script>
 </body>
