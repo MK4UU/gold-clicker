@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gold Clicker Pro | Orexn Style</title>
+    <title>EGC Network</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --bg: #05070a; 
-            --card-bg: #11141b;
-            --neon-blue: #007aff; 
-            --neon-gold: #ffac09; 
-            --accent: #5e5ce6;
+            --bg: #080a0f; 
+            --card-bg: #12161f;
+            --egc-gold: #ffac09; 
+            --egc-orange: #f35626;
+            --blue: #007aff;
         }
         
         body, html { 
@@ -21,159 +21,158 @@
             margin: 0; padding: 0; height: 100vh; overflow: hidden; 
         }
 
-        .app-container { height: 100vh; display: flex; flex-direction: column; padding: 15px; box-sizing: border-box; }
+        .app-container { height: 100vh; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; }
 
-        /* Top Profile Info */
-        .user-header { display: flex; align-items: center; justify-content: center; margin-bottom: 20px; flex-direction: column; }
-        .score-main { font-size: 42px; font-weight: 900; margin-top: 10px; }
-        .score-main span { font-size: 14px; color: #888; margin-left: 5px; }
+        /* Header */
+        .header { text-align: center; margin-bottom: 25px; }
+        .main-balance { font-size: 48px; font-weight: 900; color: #fff; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .main-balance span { font-size: 18px; color: var(--egc-gold); letter-spacing: 1px; }
 
-        /* Farming Card (Center) */
-        .farming-card { 
+        /* Farming Card Custom */
+        .egc-card { 
             background: var(--card-bg); 
-            border-radius: 24px; 
-            padding: 20px; 
-            margin-bottom: 15px;
-            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 28px; 
+            padding: 25px; 
+            border: 1px solid rgba(255,172,9,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .farm-status { color: #4cd964; font-size: 12px; display: flex; align-items: center; gap: 5px; margin-bottom: 10px; }
-        .farm-status::before { content: ''; width: 8px; height: 8px; background: #4cd964; border-radius: 50%; display: inline-block; }
-        
-        .farm-balance { font-size: 28px; font-weight: 700; margin-bottom: 15px; }
+        .card-row { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; }
+        .label { font-size: 12px; color: #888; text-transform: uppercase; }
+        .value { font-size: 14px; font-weight: bold; color: #fff; }
 
-        /* Big Action Buttons */
-        .btn-claim { 
-            width: 100%; padding: 16px; border-radius: 14px; border: none; 
-            background: linear-gradient(90deg, #00c6ff, #0072ff); 
-            color: white; font-weight: bold; font-size: 16px; margin-bottom: 10px;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
+        /* Mining Progress Bar */
+        .progress-container { margin: 20px 0; }
+        .bar-bg { height: 8px; background: #1c222d; border-radius: 10px; overflow: hidden; }
+        .bar-fill { height: 100%; width: 65%; background: linear-gradient(90deg, var(--egc-orange), var(--egc-gold)); box-shadow: 0 0 10px var(--egc-orange); }
+
+        /* Buttons */
         .btn-boost { 
-            width: 100%; padding: 16px; border-radius: 14px; border: none; 
-            background: #007aff; color: white; font-weight: bold; font-size: 16px;
+            width: 100%; padding: 18px; border-radius: 16px; border: none; 
+            background: var(--blue); color: white; font-weight: 800; font-size: 16px;
+            cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
         }
+        .btn-boost:active { transform: scale(0.97); }
 
-        /* Shortcut Grid */
-        .shortcuts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 5px; }
-        .short-item { 
-            background: var(--card-bg); border-radius: 18px; padding: 15px; 
-            text-align: center; border: 1px solid rgba(255,255,255,0.05);
+        /* Custom EGC Coin Design */
+        .coin-wrap { flex-grow: 1; display: flex; align-items: center; justify-content: center; }
+        .egc-coin { 
+            width: 200px; height: 200px; 
+            background: linear-gradient(135deg, #ffac09 0%, #f35626 100%);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 50px; font-weight: 900; color: #fff;
+            box-shadow: 0 0 50px rgba(243, 86, 38, 0.4), inset 0 0 20px rgba(255,255,255,0.3);
+            border: 8px solid rgba(255,255,255,0.1);
+            cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
         }
-        .short-item div { font-size: 12px; margin-top: 8px; color: #888; }
-        .short-item i { font-size: 24px; }
+        .egc-coin:active { transform: scale(0.92); }
 
-        /* Navigation Bar */
-        .bottom-nav { 
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; 
-            background: #0d0f14; border-top: 1px solid #1c1c1e;
-            display: flex; justify-content: space-around; align-items: center;
+        /* Bottom Nav */
+        .nav { 
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 80px; 
+            background: #0d1117; display: flex; justify-content: space-around; align-items: center;
+            border-top: 1px solid #1c222d;
         }
-        .nav-link { color: #555; text-decoration: none; font-size: 10px; text-align: center; font-weight: bold; }
-        .nav-link.active { color: #fff; }
+        .nav-item { text-align: center; color: #555; font-size: 10px; font-weight: bold; }
+        .nav-item.active { color: var(--egc-gold); }
+        .nav-icon { font-size: 22px; margin-bottom: 4px; }
 
-        /* Floating +1 */
-        .plus-one { position: absolute; color: var(--neon-gold); font-weight: 900; font-size: 30px; animation: fly 0.8s forwards; pointer-events: none; }
-        @keyframes fly { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-120px); opacity: 0; } }
-
-        /* Coin Click Area */
-        .click-zone { flex-grow: 1; display: flex; align-items: center; justify-content: center; position: relative; }
-        .coin-btn { font-size: 120px; cursor: pointer; transition: 0.1s; user-select: none; -webkit-tap-highlight-color: transparent; }
-        .coin-btn:active { transform: scale(0.9); }
-
-        /* Energy Bar */
-        .energy-bar-wrap { width: 100%; height: 6px; background: #222; border-radius: 10px; margin-top: 10px; overflow: hidden; }
-        #energy-fill { height: 100%; width: 100%; background: #007aff; transition: 0.1s; }
+        .plus-egc { position: absolute; color: var(--egc-gold); font-weight: 900; font-size: 28px; animation: fly 0.7s forwards; pointer-events: none; }
+        @keyframes fly { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-130px); opacity: 0; } }
     </style>
 </head>
 <body>
 
     <div class="app-container">
-        <div class="user-header">
-            <div style="background:#1c1c1e; padding:5px 15px; border-radius:20px; font-size:12px;">Pango Verified ✅</div>
-            <div class="score-main" id="total-score">0 <span>OXN</span></div>
+        <div class="header">
+            <div style="font-size: 12px; color: #888; margin-bottom: 5px;">TOTAL BALANCE</div>
+            <div class="main-balance" id="balance">0 <span>EGC</span></div>
         </div>
 
-        <div class="farming-card">
-            <div class="farm-status">Active</div>
-            <div class="farm-balance" id="farm-score">0.00000</div>
-            
-            <button class="btn-claim">
-                <span>⏱️</span> Next Claim in 8h 00m
-            </button>
-            
-            <button class="btn-boost" onclick="showP('page-shop')">⚡ Boost Farm</button>
-            
-            <div class="energy-bar-wrap">
-                <div id="energy-fill"></div>
+        <div class="egc-card">
+            <div class="card-row">
+                <div>
+                    <div class="label">Mining Rate</div>
+                    <div class="value" style="color: #4cd964;">+25.5 EGC/hr</div>
+                </div>
+                <div style="text-align: right;">
+                    <div class="label">Status</div>
+                    <div class="value">ACTIVE</div>
+                </div>
             </div>
+
+            <div class="progress-container">
+                <div class="card-row" style="margin-bottom: 5px;">
+                    <span class="label">Energy</span>
+                    <span class="value" id="energy-text">1000/1000</span>
+                </div>
+                <div class="bar-bg">
+                    <div id="energy-bar" class="bar-fill" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <button class="btn-boost" onclick="Telegram.WebApp.showAlert('Boost activated!')">⚡ BOOST SPEED</button>
         </div>
 
-        <div class="shortcuts">
-            <div class="short-item" onclick="showP('page-earn')"><i>💰</i><div>Rewards</div></div>
-            <div class="short-item" onclick="showP('page-earn')"><i>✨</i><div>Earn</div></div>
-            <div class="short-item" onclick="showP('page-mine')"><i>🎮</i><div>Spin</div></div>
+        <div class="coin-wrap">
+            <div class="egc-coin" id="coin">EGC</div>
         </div>
 
-        <div class="click-zone" id="coin-area">
-            <div class="coin-btn" id="coin">🪙</div>
-        </div>
-
-        <div class="bottom-nav">
-            <div class="nav-link active" onclick="showP('page-mine')">🏠<br>HOME</div>
-            <div class="nav-link" onclick="showP('page-earn')">📋<br>TASKS</div>
-            <div class="nav-link" onclick="showP('page-rank')">🏆<br>LEADERS</div>
-            <div class="nav-link" onclick="showP('page-earn')">👥<br>FRIENDS</div>
+        <div class="nav">
+            <div class="nav-item active">
+                <div class="nav-icon">🏠</div>HOME
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">📊</div>TASKS
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">👥</div>FRIENDS
+            </div>
+            <div class="nav-item">
+                <div class="nav-icon">💰</div>WALLET
+            </div>
         </div>
     </div>
 
     <script>
-        let totalScore = parseInt(localStorage.getItem('score')) || 0;
-        let farmScore = 0;
+        let score = parseInt(localStorage.getItem('egc_score')) || 0;
         let energy = 1000;
         const tg = window.Telegram.WebApp;
         tg.expand();
 
         function updateUI() {
-            document.getElementById('total-score').innerHTML = totalScore.toLocaleString() + " <span>OXN</span>";
-            document.getElementById('farm-score').innerText = farmScore.toFixed(5);
-            document.getElementById('energy-fill').style.width = (energy / 10) + "%";
-            localStorage.setItem('score', totalScore);
+            document.getElementById('balance').innerHTML = score.toLocaleString() + " <span>EGC</span>";
+            document.getElementById('energy-text').innerText = `${energy}/1000`;
+            document.getElementById('energy-bar').style.width = (energy / 10) + "%";
+            localStorage.setItem('egc_score', score);
         }
 
-        // Click Handling
         document.getElementById('coin').addEventListener('touchstart', (e) => {
             e.preventDefault();
             if (energy > 0) {
-                totalScore++;
-                farmScore += 0.00012;
+                score++;
                 energy -= 2;
                 
-                // Floating Number
-                const plus = document.createElement('div');
-                plus.className = 'plus-one'; plus.innerText = '+1';
-                plus.style.left = e.touches[0].pageX + 'px';
-                plus.style.top = e.touches[0].pageY + 'px';
-                document.body.appendChild(plus);
-                setTimeout(() => plus.remove(), 800);
+                // Animation
+                const p = document.createElement('div');
+                p.className = 'plus-egc'; p.innerText = '+1';
+                p.style.left = e.touches[0].pageX + 'px';
+                p.style.top = e.touches[0].pageY + 'px';
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 700);
                 
                 updateUI();
                 if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
             }
         });
 
-        // Auto Recovery
+        // Recovery
         setInterval(() => {
             if (energy < 1000) energy += 1;
             updateUI();
         }, 1000);
 
-        function showP(pId) {
-            // כאן אפשר להוסיף לוגיקה למעבר דפים אמיתי אם תרצה
-            tg.showAlert("Opening " + pId);
-        }
-
         updateUI();
     </script>
 </body>
 </html>
-
