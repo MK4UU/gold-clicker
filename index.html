@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EGC Network | Referral Logic</title>
+    <title>EGC Network | Full Version</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -15,11 +15,16 @@
         body, html { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 0; height: 100vh; overflow: hidden; }
         .app-container { height: 100vh; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; }
 
-        .page { display: none; flex-direction: column; flex-grow: 1; animation: fadeIn 0.4s ease-out; }
+        .page { display: none; flex-direction: column; flex-grow: 1; animation: fadeIn 0.4s ease-out; overflow-y: auto; padding-bottom: 80px; }
         .active-page { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
-        /* Boost Button */
+        /* Header */
+        .header { text-align: center; margin-bottom: 15px; flex-shrink: 0; }
+        .main-balance { font-size: 42px; font-weight: 900; }
+        .main-balance span { font-size: 16px; color: var(--egc-gold); }
+
+        /* Big Blue Boost Button */
         .btn-boost-fancy { 
             width: 100%; padding: 22px; border-radius: 20px; border: none; 
             background: linear-gradient(135deg, var(--blue-deep), #5e5ce6);
@@ -30,69 +35,88 @@
         .btn-boost-fancy:disabled { background: #222; box-shadow: none; color: #555; }
 
         /* Coin */
+        .coin-wrap { flex-grow: 1; display: flex; align-items: center; justify-content: center; min-height: 250px; }
         .egc-coin { 
             width: 200px; height: 200px; background: linear-gradient(135deg, var(--egc-gold), var(--egc-orange));
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 50px; font-weight: 900; margin: auto;
-            box-shadow: 0 0 40px rgba(243, 86, 38, 0.3); transition: 0.05s;
+            font-size: 50px; font-weight: 900; box-shadow: 0 0 40px rgba(243, 86, 38, 0.3);
+            transition: transform 0.05s; user-select: none; -webkit-tap-highlight-color: transparent;
         }
         .egc-coin:active { transform: scale(0.9); }
 
-        /* Nav */
-        .nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #0d1117; display: flex; border-top: 1px solid #1c222d; }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; font-size: 10px; font-weight: bold; }
+        /* Navigation */
+        .nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #0d1117; display: flex; border-top: 1px solid #1c222d; z-index: 1000; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; font-size: 10px; font-weight: bold; cursor: pointer; }
         .nav-item.active { color: var(--egc-gold); }
+        .nav-icon { font-size: 20px; margin-bottom: 2px; }
 
-        .referral-status { 
-            background: rgba(76, 217, 100, 0.1); color: #4cd964; 
-            padding: 10px; border-radius: 12px; font-size: 12px; 
-            text-align: center; margin-top: 10px; display: none;
-        }
+        /* Sections */
+        .card { background: var(--card-bg); padding: 20px; border-radius: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .referral-status { background: rgba(76, 217, 100, 0.1); color: #4cd964; padding: 12px; border-radius: 12px; font-size: 12px; text-align: center; margin-top: 10px; display: none; border: 1px solid rgba(76, 217, 100, 0.2); }
     </style>
 </head>
 <body>
 
     <div class="app-container">
-        <div class="header" style="text-align: center; margin-bottom: 20px;">
-            <div style="font-size: 11px; color: #888;">EGC BALANCE</div>
-            <div id="balance" style="font-size: 45px; font-weight: 900;">0</div>
+        
+        <div class="header">
+            <div style="font-size: 11px; color: #888;">TOTAL EGC</div>
+            <div id="balance" class="main-balance">0 <span>EGC</span></div>
         </div>
 
         <div id="page-home" class="page active-page">
-            <div style="background: var(--card-bg); padding: 20px; border-radius: 24px;">
+            <div class="card">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
                     <span style="font-size: 11px; color: #888;">ENERGY</span>
-                    <span id="energy-text" style="font-size: 11px;">1000/1000</span>
+                    <span id="energy-text" style="font-size: 11px; font-weight: bold;">1000/1000</span>
                 </div>
                 <div style="height: 6px; background: #1c222d; border-radius: 10px; overflow: hidden;">
-                    <div id="energy-bar" style="height: 100%; width: 100%; background: var(--blue-glow);"></div>
+                    <div id="energy-bar" style="height: 100%; width: 100%; background: var(--blue-glow); transition: 0.2s;"></div>
                 </div>
                 <button id="boost-btn" class="btn-boost-fancy" onclick="startBoost()">⚡ SUPER BOOST</button>
                 
                 <div id="ref-progress-box" class="referral-status">
-                    Target for Bonus: <span id="ref-clicks">0</span> / 500 Clicks
+                    Welcome! Reach <span id="ref-clicks">0</span>/500 Clicks for Bonus
                 </div>
             </div>
 
-            <div style="flex-grow: 1; display: flex; align-items: center;">
+            <div class="coin-wrap">
                 <div class="egc-coin" id="coin">EGC</div>
             </div>
         </div>
 
+        <div id="page-tasks" class="page">
+            <h2 style="color: var(--egc-gold);">Tasks</h2>
+            <div class="card">🚀 Follow EGC on X <br> <small style="color:var(--egc-gold)">+5,000 EGC</small></div>
+            <div class="card">📢 Join Telegram Channel <br> <small style="color:var(--egc-gold)">+2,500 EGC</small></div>
+        </div>
+
         <div id="page-friends" class="page">
             <h2 style="color: var(--egc-gold);">Invite Friends</h2>
-            <div style="background: var(--card-bg); padding: 25px; border-radius: 20px; text-align: center;">
-                <p>New friends join via link and reach 500 clicks = <b>10,000 EGC Bonus</b> for both!</p>
-                <button onclick="inviteFriend()" style="width: 100%; padding: 18px; border-radius: 15px; border: none; background: var(--blue-deep); color: white; font-weight: 900;">
-                    INVITE NEW FRIEND
+            <div class="card" style="text-align: center;">
+                <p>Friends must reach <b>500 clicks</b> to unlock the <b>10,000 EGC</b> bonus for both!</p>
+                <button onclick="inviteFriend()" style="width: 100%; padding: 18px; border-radius: 15px; border: none; background: var(--blue-deep); color: white; font-weight: 900; font-size: 16px;">
+                    SEND INVITE LINK
                 </button>
             </div>
         </div>
 
-        <div class="nav">
-            <div class="nav-item active" onclick="navTo('page-home', this)">🏠<br>HOME</div>
-            <div class="nav-item" onclick="navTo('page-friends', this)">👥<br>FRIENDS</div>
+        <div id="page-wallet" class="page">
+            <h2 style="color: var(--egc-gold);">Wallet</h2>
+            <div class="card" style="text-align: center;">
+                <div style="font-size: 12px; color:#888;">Current Assets</div>
+                <div style="font-size: 32px; font-weight: 900; margin: 10px 0;">0.00 EGC</div>
+                <button disabled style="width: 100%; padding: 12px; border-radius: 12px; background: #222; color: #555; border: none;">CONNECT WALLET</button>
+            </div>
         </div>
+
+        <div class="nav">
+            <div class="nav-item active" onclick="navTo('page-home', this)"><div class="nav-icon">🏠</div>HOME</div>
+            <div class="nav-item" onclick="navTo('page-tasks', this)"><div class="nav-icon">📋</div>TASKS</div>
+            <div class="nav-item" onclick="navTo('page-friends', this)"><div class="nav-icon">👥</div>FRIENDS</div>
+            <div class="nav-item" onclick="navTo('page-wallet', this)"><div class="nav-icon">💰</div>WALLET</div>
+        </div>
+
     </div>
 
     <script>
@@ -102,7 +126,7 @@
         let score = parseInt(localStorage.getItem('egc_score')) || 0;
         let energy = 1000;
         
-        // בדיקה אם המשתמש הגיע דרך לינק (משתמש חדש)
+        // Referral Logic
         const urlParams = new URLSearchParams(window.location.search);
         const isInvited = urlParams.has('tgWebAppStartParam') || localStorage.getItem('is_invited') === 'true';
         let refClicks = parseInt(localStorage.getItem('ref_clicks')) || 0;
@@ -120,13 +144,13 @@
         }
 
         function inviteFriend() {
-            const botName = "YOUR_BOT_USERNAME"; 
+            const botName = "YOUR_BOT_USERNAME"; // חובה לעדכן לשם הבוט שלך ב-BotFather
             const inviteLink = `https://t.me/share/url?url=https://t.me/${botName}?start=ref_${tg.initDataUnsafe.user?.id || 'user'}&text=Join EGC! Reach 500 clicks to unlock bonus!`;
             tg.openTelegramLink(inviteLink);
         }
 
         function updateUI() {
-            document.getElementById('balance').innerText = score.toLocaleString();
+            document.getElementById('balance').innerHTML = score.toLocaleString() + " <span>EGC</span>";
             document.getElementById('energy-text').innerText = `${energy}/1000`;
             document.getElementById('energy-bar').style.width = (energy / 10) + "%";
             
@@ -135,14 +159,44 @@
                 if (refClicks >= 500 && localStorage.getItem('bonus_claimed') !== 'true') {
                     score += 10000;
                     localStorage.setItem('bonus_claimed', 'true');
-                    tg.showAlert("Congratulations! 500 clicks reached. You earned 10,000 EGC Bonus!");
-                    document.getElementById('ref-progress-box').style.color = "#fff";
-                    document.getElementById('ref-progress-box').innerText = "✅ Bonus Goal Reached!";
+                    tg.showAlert("Milestone Reached! +10,000 EGC Bonus added!");
+                    document.getElementById('ref-progress-box').innerHTML = "✅ Bonus Unlocked!";
                 }
             }
             
             localStorage.setItem('egc_score', score);
             localStorage.setItem('ref_clicks', refClicks);
+            checkBoostCooldown();
+        }
+
+        function startBoost() {
+            const lastBoost = localStorage.getItem('last_boost');
+            const now = Date.now();
+            if (!lastBoost || now - lastBoost > 8 * 60 * 60 * 1000) {
+                localStorage.setItem('last_boost', now);
+                tg.showAlert("Boost Active! 2x Mining for 1 min!");
+                updateUI();
+            }
+        }
+
+        function checkBoostCooldown() {
+            const lastBoost = localStorage.getItem('last_boost');
+            const btn = document.getElementById('boost-btn');
+            if (lastBoost) {
+                const now = Date.now();
+                const diff = now - lastBoost;
+                const cooldown = 8 * 60 * 60 * 1000;
+                if (diff < cooldown) {
+                    const rem = cooldown - diff;
+                    const h = Math.floor(rem / 3600000);
+                    const m = Math.floor((rem % 3600000) / 60000);
+                    btn.disabled = true;
+                    btn.innerText = `READY IN ${h}h ${m}m`;
+                } else {
+                    btn.disabled = false;
+                    btn.innerText = "⚡ SUPER BOOST";
+                }
+            }
         }
 
         document.getElementById('coin').addEventListener('touchstart', (e) => {
@@ -152,7 +206,7 @@
                 if (isInvited && refClicks < 500) refClicks++;
                 energy -= 2;
                 updateUI();
-                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
+                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
             }
         });
 
