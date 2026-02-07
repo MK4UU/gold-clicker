@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EGC Network | Pro Edition</title>
+    <title>EGC Network | Official</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -24,7 +24,6 @@
         .main-balance { font-size: 40px; font-weight: 900; }
         .main-balance span { font-size: 14px; color: var(--egc-gold); }
 
-        /* Boost Button */
         .btn-boost-fancy { 
             width: 100%; padding: 20px; border-radius: 18px; border: none; 
             background: linear-gradient(135deg, var(--blue-deep), #5e5ce6);
@@ -33,8 +32,7 @@
         }
         .btn-boost-fancy:disabled { background: #222; box-shadow: none; color: #555; }
 
-        /* Coin */
-        .coin-wrap { flex-grow: 1; display: flex; align-items: center; justify-content: center; }
+        .coin-wrap { flex-grow: 1; display: flex; align-items: center; justify-content: center; min-height: 220px; }
         .egc-coin { 
             width: 190px; height: 190px; background: linear-gradient(135deg, var(--egc-gold), var(--egc-orange));
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -43,15 +41,14 @@
         }
         .egc-coin:active { transform: scale(0.92); }
 
-        /* Shop Cards */
         .card { background: var(--card-bg); padding: 15px; border-radius: 18px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05); }
         .shop-item { display: flex; justify-content: space-between; align-items: center; }
-        .buy-btn { background: var(--green); color: black; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .buy-btn, .task-btn { background: var(--green); color: black; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; text-decoration: none; text-align: center; }
         .buy-btn:disabled { background: #333; color: #777; }
+        .task-btn { background: var(--blue-deep); color: white; }
 
-        /* Nav */
-        .nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; background: #0d1117; display: flex; border-top: 1px solid #1c222d; }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; font-size: 10px; font-weight: bold; }
+        .nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #0d1117; display: flex; border-top: 1px solid #1c222d; z-index: 1000; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; font-size: 10px; font-weight: bold; cursor: pointer; }
         .nav-item.active { color: var(--egc-gold); }
     </style>
 </head>
@@ -80,45 +77,64 @@
         </div>
 
         <div id="page-shop" class="page">
-            <h2 style="color: var(--egc-gold);">Upgrade Store</h2>
-            
+            <h2 style="color: var(--egc-gold);">Upgrades</h2>
             <div class="card shop-item">
                 <div>
                     <b>Mining Bot 🤖</b><br>
-                    <small>Auto-mines 1 EGC/sec</small><br>
+                    <small>Mines 1 EGC every sec</small><br>
                     <span style="color: var(--egc-gold)">50,000 EGC</span>
                 </div>
                 <button class="buy-btn" id="buy-bot" onclick="buyItem('bot', 50000)">BUY</button>
             </div>
-
             <div class="card shop-item">
                 <div>
                     <b>Multi-Tap ⚡</b><br>
-                    <small>+1 EGC per click</small><br>
+                    <small>Level Up your clicks</small><br>
                     <span style="color: var(--egc-gold)">10,000 EGC</span>
                 </div>
                 <button class="buy-btn" id="buy-multi" onclick="buyItem('multi', 10000)">UPGRADE</button>
             </div>
         </div>
 
+        <div id="page-tasks" class="page">
+            <h2 style="color: var(--egc-gold);">Tasks</h2>
+            <div class="card shop-item">
+                <div>📢 <b>Join Community</b><br><small>+2,500 EGC</small></div>
+                <a href="#" onclick="tg.openTelegramLink('https://t.me/EGC_Network')" class="task-btn">JOIN</a>
+            </div>
+        </div>
+
         <div id="page-friends" class="page">
             <h2 style="color: var(--egc-gold);">Invite</h2>
             <div class="card" style="text-align: center;">
-                <p>Get 10,000 EGC bonus for each friend!</p>
-                <button onclick="inviteFriend()" class="btn-boost-fancy">INVITE</button>
+                <p>Friends must reach <b>500 clicks</b> to unlock a <b>10,000 EGC</b> bonus!</p>
+                <button onclick="inviteFriend()" class="btn-boost-fancy">INVITE FRIENDS</button>
+            </div>
+        </div>
+
+        <div id="page-wallet" class="page">
+            <h2 style="color: var(--egc-gold);">Wallet</h2>
+            <div class="card" style="text-align: center;">
+                <div style="font-size: 12px; color:#888;">Balance</div>
+                <div style="font-size: 32px; font-weight: 900; margin: 10px 0;">0.00 EGC</div>
+                <button disabled class="btn-boost-fancy" style="background:#222; box-shadow:none; color:#555;">CONNECT WALLET</button>
             </div>
         </div>
 
         <div class="nav">
             <div class="nav-item active" onclick="navTo('page-home', this)">🏠<br>HOME</div>
+            <div class="nav-item" onclick="navTo('page-tasks', this)">📋<br>TASKS</div>
             <div class="nav-item" onclick="navTo('page-shop', this)">🛒<br>SHOP</div>
             <div class="nav-item" onclick="navTo('page-friends', this)">👥<br>FRIENDS</div>
+            <div class="nav-item" onclick="navTo('page-wallet', this)">💰<br>WALLET</div>
         </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+
+        tg.showConfirm("Welcome to EGC Network! Start mining?", (ok) => { if(!ok) tg.close(); });
 
         let score = parseInt(localStorage.getItem('egc_score')) || 0;
         let energy = 1000;
@@ -138,13 +154,12 @@
                 if (type === 'bot') {
                     hasBot = true;
                     localStorage.setItem('egc_has_bot', 'true');
-                    tg.showAlert("Robot purchased! It will mine while you play.");
                 } else if (type === 'multi') {
                     tapLevel++;
                     localStorage.setItem('egc_tap_level', tapLevel);
-                    tg.showAlert("Upgrade successful! More EGC per click.");
                 }
                 updateUI();
+                tg.showAlert("Success!");
             } else {
                 tg.showAlert("Not enough EGC!");
             }
@@ -155,44 +170,35 @@
             document.getElementById('energy-text').innerText = `${energy}/1000`;
             document.getElementById('energy-bar').style.width = (energy / 10) + "%";
             document.getElementById('bot-status').style.visibility = hasBot ? "visible" : "hidden";
-            
-            // Disable buttons if can't afford
-            document.getElementById('buy-bot').disabled = (hasBot || score < 50000);
+            document.getElementById('buy-bot').disabled = hasBot;
             if(hasBot) document.getElementById('buy-bot').innerText = "OWNED";
-            document.getElementById('buy-multi').disabled = (score < 10000);
-
             localStorage.setItem('egc_score', score);
         }
 
-        // Mining Bot Logic
-        setInterval(() => {
-            if (hasBot) {
-                score += 1;
-                updateUI();
-            }
-        }, 1000);
+        // Auto-Bot Interval
+        setInterval(() => { if (hasBot) { score += 1; updateUI(); } }, 1000);
 
+        // Click Logic
         document.getElementById('coin').addEventListener('touchstart', (e) => {
             e.preventDefault();
             if (energy > 0) {
                 score += tapLevel;
                 energy -= 1;
                 updateUI();
-                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
             }
         });
 
         function startBoost() {
-            // Logic for boost can be added here
-            tg.showAlert("Boost active! Energy refilled.");
             energy = 1000;
             updateUI();
+            tg.showAlert("Energy Refilled!");
         }
 
         function inviteFriend() {
             const botName = "Gold_Cliker_Nova_Bot"; 
             const link = `https://t.me/${botName}/app?startapp=ref_${tg.initDataUnsafe.user?.id || 'user'}`;
-            tg.openTelegramLink(`https://t.me/share/url?url=${link}&text=Join%20EGC!`);
+            tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=Join%20EGC%20Network!`);
         }
 
         setInterval(() => { if (energy < 1000) energy++; updateUI(); }, 1500);
@@ -200,4 +206,3 @@
     </script>
 </body>
 </html>
-
